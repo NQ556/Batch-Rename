@@ -30,3 +30,14 @@ E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.csproj.G
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.csproj.CoreCompileInputs.cache
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.exe
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.pdb
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\ControlzEx.dll
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Fluent.dll
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Microsoft.Xaml.Behaviors.dll
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\ControlzEx.pdb
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\ControlzEx.xml
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Fluent.pdb
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Fluent.xml
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Microsoft.Xaml.Behaviors.pdb
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Microsoft.Xaml.Behaviors.xml
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\App.baml
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.csproj.CopyComplete
