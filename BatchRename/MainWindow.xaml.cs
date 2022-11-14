@@ -46,6 +46,7 @@ namespace BatchRename
         private void addFileButton_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.Multiselect = true;
 
             bool? response = openFileDialog.ShowDialog();
 
@@ -58,8 +59,10 @@ namespace BatchRename
                     var newFile = new File()
                     {
                         name = fileName,
+                        newName = "",
                         extension = fileExtension,
-                        path = filePath
+                        path = filePath,
+                        isSelected = false
                     };
                     _files.Add(newFile);
                 }
@@ -76,6 +79,27 @@ namespace BatchRename
         {
             fileListView.Visibility = Visibility.Hidden;
             folderListView.Visibility = Visibility.Visible;
+        }
+
+        private void removeFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<File> _removedFiles = new List<File>();
+
+            foreach (var file in _files)
+            {
+                if (file.isSelected == true)
+                {
+                    _removedFiles.Add(file);
+                }
+            }
+
+            if (_removedFiles.Count != 0)
+            {
+                foreach (var file in _removedFiles)
+                {
+                    _files.Remove(file);
+                }
+            }
         }
     }
 }

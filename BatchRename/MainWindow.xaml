@@ -126,7 +126,7 @@
 
                             <Button x:Name="removeFileButton" Width="120" Height="30"
                                     Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
-                                    Margin="15,13,0,0" DockPanel.Dock="Top">
+                                    Margin="15,13,0,0" DockPanel.Dock="Top" Click="removeFileButton_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="/Images/delete.png" Width="20" Height="20"/>
                                     <TextBlock Text="Remove file" Margin="5,0,0,0"/>
@@ -159,6 +159,7 @@
                     </Fluent:RibbonTabItem>
                 </Fluent:Ribbon>
             </DockPanel>
+            
             <Canvas Height="377">
                 <ListView x:Name="fileListView" Background="#caecfc" BorderBrush="#39a2db" Height="377" 
                      Width="800" Margin="15,15,13,15">
@@ -205,7 +206,7 @@
                             <GridViewColumn Width="40">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox IsChecked="{Binding include}"/>
+                                        <CheckBox IsChecked="{Binding Path=isSelected, Mode=TwoWay}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

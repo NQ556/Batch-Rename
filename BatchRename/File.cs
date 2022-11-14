@@ -13,6 +13,7 @@ namespace BatchRename
         public string newName { get; set; }
         public string extension { get; set; }
         public string path { get; set; }
+        public bool isSelected { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
