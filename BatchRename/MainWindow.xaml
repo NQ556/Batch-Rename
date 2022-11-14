@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BatchRename"
         xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
                      mc:Ignorable="d"
-        Title="Batch Rename" Height="600" Width="1000" ResizeMode="NoResize">
+        Title="Batch Rename" Height="600" Width="1200" ResizeMode="NoResize" Loaded="RibbonWindow_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="370"></ColumnDefinition>
@@ -116,10 +116,19 @@
                         <Fluent:RibbonGroupBox IsSeparatorVisible="False">
                             <Button x:Name="addFileButton" Width="120" Height="30"
                                     Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
-                                    Margin="0,13,0,0" DockPanel.Dock="Top">
+                                    Margin="0,13,0,0" DockPanel.Dock="Top" Click="addFileButton_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="/Images/add.png" Width="20" Height="20"/>
                                     <TextBlock Text="Add new file" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button x:Name="removeFileButton" Width="120" Height="30"
+                                    Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
+                                    Margin="15,13,0,0" DockPanel.Dock="Top">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Images/delete.png" Width="20" Height="20"/>
+                                    <TextBlock Text="Remove file" Margin="5,0,0,0"/>
                                 </StackPanel>
                             </Button>
                         </Fluent:RibbonGroupBox>
@@ -135,15 +144,73 @@
                                     <TextBlock Text="Add new folder" Margin="5,0,0,0"/>
                                 </StackPanel>
                             </Button>
+
+                            <Button x:Name="removeFolderButton" Width="120" Height="30"
+                                    Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
+                                    Margin="15,13,0,0" DockPanel.Dock="Top">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Images/delete.png" Width="20" Height="20"/>
+                                    <TextBlock Text="Remove folder" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Button>
                         </Fluent:RibbonGroupBox>
                     </Fluent:RibbonTabItem>
                 </Fluent:Ribbon>
             </DockPanel>
 
-            <ListView Background="#caecfc" BorderBrush="#39a2db" Height="377" Margin="15,15,13,0">
-                
+            <ListView x:Name="fileListView" Background="#caecfc" BorderBrush="#39a2db" Height="377" 
+                      Margin="15,15,13,0">
+                <ListView.View>
+                    <GridView>
+                        <GridView.ColumnHeaderContainerStyle>
+                            <Style TargetType="{x:Type GridViewColumnHeader}">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </Style>
+                        </GridView.ColumnHeaderContainerStyle>
+                        
+                        <GridViewColumn Header="File name" Width="180">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding name}" Foreground="#39a2db"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Header="New file name" Width="180">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Header="Extension" Width="120">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding extension}" Foreground="#39a2db"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Header="Path" Width="290">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding path}" Foreground="#39a2db"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        
+                        <GridViewColumn Width="40">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding include}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
             </ListView>
-            
+
         </StackPanel>
     </Grid>
 </Fluent:RibbonWindow>
