@@ -4,18 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
+using System.Reflection;
+using System.Web.ApplicationServices;
+using System.Windows.Controls;
+using System.ComponentModel;
 
 namespace BatchRename
 {
@@ -25,18 +19,23 @@ namespace BatchRename
     /// 
     public partial class MainWindow : RibbonWindow
     {
+        class Rule : INotifyPropertyChanged
+        {
+            public string rule { get; set; }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+        }
+        
         public MainWindow()
         {
             InitializeComponent();
+            
         }
 
         ObservableCollection<File> _files = new ObservableCollection<File>();
         ObservableCollection<File> _folders = new ObservableCollection<File>();
-
-        private void openWorkButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
+        ObservableCollection<Rule> _rules = new ObservableCollection<Rule>();
+        List<string> _types = new List<string>();
 
         private void RibbonWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -46,8 +45,44 @@ namespace BatchRename
             _folders = new ObservableCollection<File>();
             folderListView.ItemsSource = _folders;
 
+            _rules = new ObservableCollection<Rule>();
+            rulesListView.ItemsSource = _rules;
+
             fileListView.Visibility = Visibility.Visible;
             folderListView.Visibility = Visibility.Hidden;
+            loadDLL();
+            addRules();
+        }
+        
+
+        private void loadDLL()
+        {
+            string curDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+            string RulesDirectory = curDirectory + "Rules\\";
+            DirectoryInfo d = new DirectoryInfo(RulesDirectory);
+            FileInfo[] Files = d.GetFiles("*.dll");
+            string tmp = "";
+
+            foreach (FileInfo file in Files)
+            {
+                tmp = RulesDirectory + file.Name;
+                Assembly assembly = Assembly.LoadFrom(tmp);
+                string type = Path.GetFileNameWithoutExtension(tmp);
+                _types.Add(type);
+            }
+        }
+
+        private void addRules()
+        {
+            foreach (string rule in _types)
+            {
+                switch (rule)
+                {
+                    case "ChangeExtension":
+                        ruleCombobox.Items.Add("Change file's extension");
+                        break;
+                }
+            }
         }
 
         private void addFileButton_Click(object sender, RoutedEventArgs e)
@@ -160,6 +195,20 @@ namespace BatchRename
                     _folders.Remove(folder);
                 }
             }
+        }
+
+        private void addRuleButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedValue = (string)ruleCombobox.SelectedValue;
+            if (selectedValue != null)
+            {
+                string ruleName = selectedValue.ToString();
+                Rule newRule = new Rule()
+                {
+                    rule = ruleName
+                };
+                _rules.Add(newRule);
+            } 
         }
     }
 }

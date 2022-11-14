@@ -67,7 +67,15 @@
 
             <StackPanel Height="30" Margin="15,15,13,0" Orientation="Horizontal">
                 <Label x:Name="ruleLabel" Content="Rule: " Foreground="#39a2db" FontSize="18"/>
-                <ComboBox x:Name="ruleCombobox" Width="165" Margin="34,0,0,0"/>
+                <ComboBox x:Name="ruleCombobox" Width="165" Margin="34,0,0,0" Foreground="#39a2db" FontSize="14"/>
+                <Button x:Name="addRuleButton" Width="80" Height="30" 
+                        Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
+                        Margin="7,0,0,0" Click="addRuleButton_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Images/add.png" Width="20" Height="20"/>
+                        <TextBlock Text="Add" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
 
             <StackPanel Height="30" Margin="15,15,13,0" Orientation="Horizontal">
@@ -76,8 +84,27 @@
                          VerticalContentAlignment="Center" FontSize="15" Foreground="#39a2db"/>
             </StackPanel>
 
-            <ListView Background="#caecfc" Height="332" Margin="15,15,13,0" BorderBrush="#39a2db">
+            <ListView x:Name="rulesListView" Background="#caecfc" Height="332" Margin="15,15,13,0" BorderBrush="#39a2db">
+                <ListView.Resources>
+                    <ContextMenu x:Key="rulesListViewContextMenu">
+                        <MenuItem Header="Edit">
+                            <MenuItem.Icon>
+                                <Image Source="/Images/edit.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListView.Resources>
 
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="ContextMenu" Value="{StaticResource rulesListViewContextMenu}"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding rule}" Foreground="#39a2db" FontSize="14"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
             </ListView>
 
             <StackPanel Height="30" Margin="15,15,13,0" Orientation="Horizontal">
@@ -100,12 +127,21 @@
 
         <StackPanel Grid.Column="1">
             <StackPanel Height="30" Margin="15,15,13,0" Orientation="Horizontal">
-                <Button x:Name="startButton" Width="120" Height="30" 
+                <Button x:Name="startBatchButton" Width="120" Height="30" 
                         Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
                         Margin="4,0,0,0">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Images/start.png" Width="20" Height="20"/>
-                        <TextBlock Text="Start batching" Margin="5,0,0,0"/>
+                        <TextBlock Text="Start batch" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="previewButton" Width="120" Height="30" 
+                        Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
+                        Margin="15,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Images/view.png" Width="20" Height="20"/>
+                        <TextBlock Text="Preview" Margin="5,0,0,0"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -132,6 +168,14 @@
                                     <TextBlock Text="Remove file" Margin="5,0,0,0"/>
                                 </StackPanel>
                             </Button>
+
+                            <Button x:Name="selectAllFiles" Width="120" Height="30" Background="Transparent" 
+                                    BorderBrush="#39a2db" Foreground="#39a2db" Margin="15,13,0,0" DockPanel.Dock="Top">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Images/select.png" Width="20" Height="20"/>
+                                    <TextBlock Text="Select all files" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Button>
                         </Fluent:RibbonGroupBox>
                     </Fluent:RibbonTabItem>
 
@@ -153,6 +197,14 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="/Images/delete.png" Width="20" Height="20"/>
                                     <TextBlock Text="Remove folder" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button x:Name="selectAllFolders" Width="120" Height="30" Background="Transparent" 
+                                    BorderBrush="#39a2db" Foreground="#39a2db" Margin="15,13,0,0" DockPanel.Dock="Top">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Images/select.png" Width="20" Height="20"/>
+                                    <TextBlock Text="Select all folders" Margin="5,0,0,0"/>
                                 </StackPanel>
                             </Button>
                         </Fluent:RibbonGroupBox>

@@ -8,12 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/add.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/delete.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/new.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/open.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/save.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/save_as.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/start.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/edit.png")]
 
 
