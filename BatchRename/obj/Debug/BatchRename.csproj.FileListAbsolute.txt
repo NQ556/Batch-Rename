@@ -41,3 +41,7 @@ E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Microsoft.Xaml.Behav
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Microsoft.Xaml.Behaviors.xml
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\App.baml
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.csproj.CopyComplete
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Microsoft.WindowsAPICodePack.dll
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Microsoft.WindowsAPICodePack.xml
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml

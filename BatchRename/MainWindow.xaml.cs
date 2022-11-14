@@ -1,4 +1,5 @@
 ﻿using Fluent;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -29,6 +31,7 @@ namespace BatchRename
         }
 
         ObservableCollection<File> _files = new ObservableCollection<File>();
+        ObservableCollection<File> _folders = new ObservableCollection<File>();
 
         private void openWorkButton_Click(object sender, RoutedEventArgs e)
         {
@@ -39,18 +42,25 @@ namespace BatchRename
         {
             _files = new ObservableCollection<File>();
             fileListView.ItemsSource = _files;
+
+            _folders = new ObservableCollection<File>();
+            folderListView.ItemsSource = _folders;
+
             fileListView.Visibility = Visibility.Visible;
             folderListView.Visibility = Visibility.Hidden;
         }
 
         private void addFileButton_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            var openFileDialog = new CommonOpenFileDialog
+            {
+
+            };
+
             openFileDialog.Multiselect = true;
+            var res = openFileDialog.ShowDialog(); 
 
-            bool? response = openFileDialog.ShowDialog();
-
-            if (response == true)
+            if (res == CommonFileDialogResult.Ok)
             {
                 foreach (string filePath in openFileDialog.FileNames)
                 {
@@ -98,6 +108,56 @@ namespace BatchRename
                 foreach (var file in _removedFiles)
                 {
                     _files.Remove(file);
+                }
+            }
+        }
+
+        private void addFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openFolderDialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+            };
+
+            openFolderDialog.Multiselect = true;
+            var res = openFolderDialog.ShowDialog();
+
+            if (res == CommonFileDialogResult.Ok)
+            {
+                foreach(string folderPath in openFolderDialog.FileNames)
+                {
+                    string folderName = Path.GetFileName(folderPath);
+
+                    var newFolder = new File()
+                    {
+                        name = folderName,
+                        newName = "",
+                        extension = "",
+                        path = folderPath,
+                        isSelected = false
+                    };
+                    _folders.Add(newFolder);
+                }
+            }
+        }
+
+        private void removeFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<File> _removedFolders = new List<File>();
+
+            foreach (var folder in _folders)
+            {
+                if (folder.isSelected == true)
+                {
+                    _removedFolders.Add(folder);
+                }
+            }
+
+            if (_removedFolders.Count != 0)
+            {
+                foreach (var folder in _removedFolders)
+                {
+                    _folders.Remove(folder);
                 }
             }
         }
