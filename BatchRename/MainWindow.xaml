@@ -112,7 +112,8 @@
 
             <DockPanel LastChildFill="True">
                 <Fluent:Ribbon DockPanel.Dock="Top" Height="75" Margin="15,15,0,0">
-                    <Fluent:RibbonTabItem Header="File" Foreground="#39a2db" Height="30">
+                    <Fluent:RibbonTabItem Header="File" Foreground="#39a2db" Height="30"
+                                          PreviewMouseLeftButtonDown="RibbonTabItem_PreviewMouseLeftButtonDown">
                         <Fluent:RibbonGroupBox IsSeparatorVisible="False">
                             <Button x:Name="addFileButton" Width="120" Height="30"
                                     Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
@@ -133,8 +134,9 @@
                             </Button>
                         </Fluent:RibbonGroupBox>
                     </Fluent:RibbonTabItem>
-                    
-                    <Fluent:RibbonTabItem Header="Folder" Foreground="#39a2db" Height="30">
+
+                    <Fluent:RibbonTabItem Header="Folder" Foreground="#39a2db" Height="30"
+                                          PreviewMouseLeftButtonDown="RibbonTabItem_PreviewMouseLeftButtonDown_1">
                         <Fluent:RibbonGroupBox IsSeparatorVisible="False">
                             <Button x:Name="addFolderButton" Width="120" Height="30"
                                     Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
@@ -157,60 +159,113 @@
                     </Fluent:RibbonTabItem>
                 </Fluent:Ribbon>
             </DockPanel>
+            <Canvas Height="377">
+                <ListView x:Name="fileListView" Background="#caecfc" BorderBrush="#39a2db" Height="377" 
+                     Width="800" Margin="15,15,13,15">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.ColumnHeaderContainerStyle>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </Style>
+                            </GridView.ColumnHeaderContainerStyle>
 
-            <ListView x:Name="fileListView" Background="#caecfc" BorderBrush="#39a2db" Height="377" 
-                      Margin="15,15,13,0">
-                <ListView.View>
-                    <GridView>
-                        <GridView.ColumnHeaderContainerStyle>
-                            <Style TargetType="{x:Type GridViewColumnHeader}">
-                                <Setter Property="IsEnabled" Value="False"/>
-                            </Style>
-                        </GridView.ColumnHeaderContainerStyle>
-                        
-                        <GridViewColumn Header="File name" Width="180">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding name}" Foreground="#39a2db"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                            <GridViewColumn Header="File name" Width="180">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding name}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
-                        <GridViewColumn Header="New file name" Width="180">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                            <GridViewColumn Header="New file name" Width="180">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
-                        <GridViewColumn Header="Extension" Width="120">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding extension}" Foreground="#39a2db"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                            <GridViewColumn Header="Extension" Width="120">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding extension}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
-                        <GridViewColumn Header="Path" Width="290">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding path}" Foreground="#39a2db"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        
-                        <GridViewColumn Width="40">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <CheckBox IsChecked="{Binding include}"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+                            <GridViewColumn Header="Path" Width="290">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding path}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
 
+                            <GridViewColumn Width="40">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding include}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <ListView x:Name="folderListView" Background="#caecfc" BorderBrush="#39a2db" Height="377" 
+                     Width="800" Margin="15,15,13,0">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.ColumnHeaderContainerStyle>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </Style>
+                            </GridView.ColumnHeaderContainerStyle>
+
+                            <GridViewColumn Header="Folder name" Width="180">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding name}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="New folder name" Width="180">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Extension" Width="120">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding extension}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="Path" Width="290">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding path}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Width="40">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding include}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Canvas>
         </StackPanel>
     </Grid>
 </Fluent:RibbonWindow>

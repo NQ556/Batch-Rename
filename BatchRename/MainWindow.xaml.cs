@@ -30,11 +30,6 @@ namespace BatchRename
 
         ObservableCollection<File> _files = new ObservableCollection<File>();
 
-        private void loadFileList()
-        {
-            
-        }
-
         private void openWorkButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -44,6 +39,8 @@ namespace BatchRename
         {
             _files = new ObservableCollection<File>();
             fileListView.ItemsSource = _files;
+            fileListView.Visibility = Visibility.Visible;
+            folderListView.Visibility = Visibility.Hidden;
         }
 
         private void addFileButton_Click(object sender, RoutedEventArgs e)
@@ -63,10 +60,22 @@ namespace BatchRename
                         name = fileName,
                         extension = fileExtension,
                         path = filePath
-                    }; 
+                    };
                     _files.Add(newFile);
-                }  
+                }
             }
+        }
+
+        private void RibbonTabItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            fileListView.Visibility = Visibility.Visible;
+            folderListView.Visibility = Visibility.Hidden;
+        }
+
+        private void RibbonTabItem_PreviewMouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
+        {
+            fileListView.Visibility = Visibility.Hidden;
+            folderListView.Visibility = Visibility.Visible;
         }
     }
 }
