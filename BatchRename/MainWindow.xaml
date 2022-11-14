@@ -138,10 +138,10 @@
 
                 <Button x:Name="previewButton" Width="120" Height="30" 
                         Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
-                        Margin="15,0,0,0">
+                        Margin="15,0,0,0" Click="previewButton_Click">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Images/view.png" Width="20" Height="20"/>
-                        <TextBlock Text="Preview" Margin="5,0,0,0"/>
+                        <TextBlock Text="Preview name" Margin="5,0,0,0"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -231,18 +231,18 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-                            <GridViewColumn Header="New file name" Width="180">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-
                             <GridViewColumn Header="Extension" Width="120">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding extension}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="New file name" Width="180">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -284,18 +284,18 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-                            <GridViewColumn Header="New folder name" Width="180">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-
                             <GridViewColumn Header="Extension" Width="120">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding extension}" Foreground="#39a2db"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                            <GridViewColumn Header="New folder name" Width="180">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

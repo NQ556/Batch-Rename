@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Web.ApplicationServices;
 using System.Windows.Controls;
 using System.ComponentModel;
+using static System.Net.WebRequestMethods;
 
 namespace BatchRename
 {
@@ -22,7 +23,6 @@ namespace BatchRename
         class Rule : INotifyPropertyChanged
         {
             public string rule { get; set; }
-
             public event PropertyChangedEventHandler PropertyChanged;
         }
         
@@ -36,7 +36,8 @@ namespace BatchRename
         ObservableCollection<File> _folders = new ObservableCollection<File>();
         ObservableCollection<Rule> _rules = new ObservableCollection<Rule>();
         List<string> _types = new List<string>();
-
+        List<Assembly> _assembly = new List<Assembly>();
+        List<string> _addRules = new List<string>();
         private void RibbonWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _files = new ObservableCollection<File>();
@@ -69,6 +70,7 @@ namespace BatchRename
                 Assembly assembly = Assembly.LoadFrom(tmp);
                 string type = Path.GetFileNameWithoutExtension(tmp);
                 _types.Add(type);
+                _assembly.Add(assembly);
             }
         }
 
@@ -80,9 +82,23 @@ namespace BatchRename
                 {
                     case "ChangeExtension":
                         ruleCombobox.Items.Add("Change file's extension");
+                        _addRules.Add(rule);
                         break;
                 }
             }
+        }
+
+        private int getRuleOrder(string rule)
+        {
+            int res = 0;
+            for (int i = 0; i < _addRules.Count; i++)
+            {
+                if (rule == _types[i])
+                {
+                    res = i;
+                }
+            }
+            return res;
         }
 
         private void addFileButton_Click(object sender, RoutedEventArgs e)
@@ -209,6 +225,37 @@ namespace BatchRename
                 };
                 _rules.Add(newRule);
             } 
+        }
+
+        private void previewButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(string rule in _addRules)
+            {
+                string fullTypeName = rule + "." + rule;
+                int order = getRuleOrder(rule);
+                Assembly assembly = _assembly[order];
+                Type tmpType = assembly.GetType(fullTypeName);
+                var obj = Activator.CreateInstance(tmpType);
+
+                for (int i = 0; i < _files.Count; i++)
+                {
+                    string curExtension = _files[i].extension;
+                    string newExtension = "txt";
+                    var method = tmpType.GetMethod("change");
+                    string rename = method.Invoke(obj, new object[] { curExtension, newExtension }).ToString();
+
+                    var newFile = new File()
+                    {
+                        name = _files[i].name,
+                        newName = _files[i].name + rename,
+                        extension = curExtension,
+                        path = _files[i].path,
+                        isSelected = false
+                    };
+                    
+                    _files[i] = newFile;
+                }  
+            }
         }
     }
 }
