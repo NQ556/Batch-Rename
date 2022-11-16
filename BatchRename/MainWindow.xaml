@@ -87,9 +87,15 @@
             <ListView x:Name="rulesListView" Background="#caecfc" Height="332" Margin="15,15,13,0" BorderBrush="#39a2db">
                 <ListView.Resources>
                     <ContextMenu x:Key="rulesListViewContextMenu">
-                        <MenuItem Header="Edit">
+                        <MenuItem x:Name="EditRule" Header="Edit">
                             <MenuItem.Icon>
                                 <Image Source="/Images/edit.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
+                        <MenuItem x:Name="RemoveRule" Header="Remove" Click="RemoveRule_Click">
+                            <MenuItem.Icon>
+                                <Image Source="/Images/delete.png"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>
@@ -102,7 +108,7 @@
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding rule}" Foreground="#39a2db" FontSize="14"/>
+                        <TextBlock Text="{Binding ruleName}" Foreground="#39a2db" FontSize="14"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
@@ -170,7 +176,8 @@
                             </Button>
 
                             <Button x:Name="selectAllFiles" Width="120" Height="30" Background="Transparent" 
-                                    BorderBrush="#39a2db" Foreground="#39a2db" Margin="15,13,0,0" DockPanel.Dock="Top">
+                                    BorderBrush="#39a2db" Foreground="#39a2db" Margin="15,13,0,0" DockPanel.Dock="Top"
+                                    Click="selectAllFiles_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="/Images/select.png" Width="20" Height="20"/>
                                     <TextBlock Text="Select all files" Margin="5,0,0,0"/>
@@ -201,7 +208,8 @@
                             </Button>
 
                             <Button x:Name="selectAllFolders" Width="120" Height="30" Background="Transparent" 
-                                    BorderBrush="#39a2db" Foreground="#39a2db" Margin="15,13,0,0" DockPanel.Dock="Top">
+                                    BorderBrush="#39a2db" Foreground="#39a2db" Margin="15,13,0,0" DockPanel.Dock="Top"
+                                    Click="selectAllFolders_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="/Images/select.png" Width="20" Height="20"/>
                                     <TextBlock Text="Select all folders" Margin="5,0,0,0"/>

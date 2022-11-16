@@ -11,6 +11,7 @@ using System.Web.ApplicationServices;
 using System.Windows.Controls;
 using System.ComponentModel;
 using static System.Net.WebRequestMethods;
+using System.Runtime.CompilerServices;
 
 namespace BatchRename
 {
@@ -22,10 +23,12 @@ namespace BatchRename
     {
         class Rule : INotifyPropertyChanged
         {
-            public string rule { get; set; }
+            public string ruleName { get; set; }
+            public string ruleType { get; set; }
+            public Assembly assembly { get; set; }
             public event PropertyChangedEventHandler PropertyChanged;
         }
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -34,10 +37,8 @@ namespace BatchRename
 
         ObservableCollection<File> _files = new ObservableCollection<File>();
         ObservableCollection<File> _folders = new ObservableCollection<File>();
-        ObservableCollection<Rule> _rules = new ObservableCollection<Rule>();
-        List<string> _types = new List<string>();
-        List<Assembly> _assembly = new List<Assembly>();
-        List<string> _addRules = new List<string>();
+        ObservableCollection<Rule> _addRules = new ObservableCollection<Rule>();
+        List<Rule> _rules = new List<Rule>();
         private void RibbonWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _files = new ObservableCollection<File>();
@@ -46,15 +47,13 @@ namespace BatchRename
             _folders = new ObservableCollection<File>();
             folderListView.ItemsSource = _folders;
 
-            _rules = new ObservableCollection<Rule>();
-            rulesListView.ItemsSource = _rules;
+            _addRules = new ObservableCollection<Rule>();
+            rulesListView.ItemsSource = _addRules;
 
             fileListView.Visibility = Visibility.Visible;
             folderListView.Visibility = Visibility.Hidden;
             loadDLL();
-            addRules();
         }
-        
 
         private void loadDLL()
         {
@@ -69,36 +68,68 @@ namespace BatchRename
                 tmp = RulesDirectory + file.Name;
                 Assembly assembly = Assembly.LoadFrom(tmp);
                 string type = Path.GetFileNameWithoutExtension(tmp);
-                _types.Add(type);
-                _assembly.Add(assembly);
+
+                Rule newRule = new Rule()
+                {
+                   ruleName = getRuleName(type),
+                   ruleType = type,
+                   assembly = assembly
+                };
+                _rules.Add(newRule);
+                ruleCombobox.Items.Add(newRule.ruleName);
             }
         }
 
-        private void addRules()
+        private string getRuleName(string type)
         {
-            foreach (string rule in _types)
+            string res = "";
+            switch (type)
             {
-                switch (rule)
-                {
-                    case "ChangeExtension":
-                        ruleCombobox.Items.Add("Change file's extension");
-                        _addRules.Add(rule);
-                        break;
-                }
+                case "ChangeExtension":
+                    res = "Change file's extension";
+                    break;
             }
+            return res;
         }
 
-        private int getRuleOrder(string rule)
+        private string getRuleType(string rule)
         {
-            int res = 0;
-            for (int i = 0; i < _addRules.Count; i++)
+            string res = "";
+
+            foreach (Rule item in _rules)
             {
-                if (rule == _types[i])
+                if (item.ruleName == rule)
                 {
-                    res = i;
+                    res = item.ruleType;
                 }
             }
             return res;
+        }
+
+        private Assembly getAssembly(string type)
+        {
+            Assembly res = null;
+
+            foreach (Rule item in _rules)
+            {
+                if (item.ruleType == type)
+                {
+                    res = item.assembly;
+                }    
+            }
+            return res;
+        }
+        
+        private bool isFileExisted(File file)
+        {
+            foreach(File item in _files)
+            {
+                if (file.name == item.name && file.path == item.path)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void addFileButton_Click(object sender, RoutedEventArgs e)
@@ -125,7 +156,11 @@ namespace BatchRename
                         path = filePath,
                         isSelected = false
                     };
-                    _files.Add(newFile);
+
+                    if (!isFileExisted(newFile))
+                    {
+                        _files.Add(newFile);
+                    }
                 }
             }
         }
@@ -162,7 +197,19 @@ namespace BatchRename
                 }
             }
         }
-
+       
+        private bool isFolderExisted(File folder)
+        {
+            foreach (File item in _folders)
+            {
+                if (folder.name == item.name && folder.path == item.path)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
         private void addFolderButton_Click(object sender, RoutedEventArgs e)
         {
             var openFolderDialog = new CommonOpenFileDialog
@@ -187,11 +234,14 @@ namespace BatchRename
                         path = folderPath,
                         isSelected = false
                     };
-                    _folders.Add(newFolder);
+                    if (!isFolderExisted(newFolder))
+                    {
+                        _folders.Add(newFolder);
+                    }
                 }
             }
         }
-
+        
         private void removeFolderButton_Click(object sender, RoutedEventArgs e)
         {
             List<File> _removedFolders = new List<File>();
@@ -213,27 +263,47 @@ namespace BatchRename
             }
         }
 
+        private bool isRuleExisted(Rule rule)
+        {
+            bool res = false;
+
+            foreach (Rule item in _addRules)
+            {
+                if (item.ruleName == rule.ruleName && item.ruleType == rule.ruleType)
+                {
+                    res = true;
+                }
+            }
+            return res;
+        }
         private void addRuleButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedValue = (string)ruleCombobox.SelectedValue;
             if (selectedValue != null)
             {
                 string ruleName = selectedValue.ToString();
+                string ruleType = getRuleType(ruleName);
+
                 Rule newRule = new Rule()
                 {
-                    rule = ruleName
+                    ruleName = ruleName,
+                    ruleType = ruleType
                 };
-                _rules.Add(newRule);
+
+                if (!isRuleExisted(newRule))
+                {
+                    _addRules.Add(newRule);
+                }
             } 
         }
-
+        
         private void previewButton_Click(object sender, RoutedEventArgs e)
         {
-            foreach(string rule in _addRules)
+            foreach(var rule in _addRules)
             {
-                string fullTypeName = rule + "." + rule;
-                int order = getRuleOrder(rule);
-                Assembly assembly = _assembly[order];
+                string type = rule.ruleType;
+                string fullTypeName = type + "." + type;
+                Assembly assembly = getAssembly(type);
                 Type tmpType = assembly.GetType(fullTypeName);
                 var obj = Activator.CreateInstance(tmpType);
 
@@ -256,6 +326,96 @@ namespace BatchRename
                     _files[i] = newFile;
                 }  
             }
+        }
+
+        bool selectAllFilesFlag = false;
+        private void selectAllFiles_Click(object sender, RoutedEventArgs e)
+        {
+            if (!selectAllFilesFlag)
+            {
+                for (int i = 0; i < _files.Count; i++)
+                {
+                    _files[i].isSelected = true;
+
+                    File tmp = new File()
+                    {
+                        name = _files[i].name,
+                        newName = _files[i].newName,
+                        extension = _files[i].extension,
+                        path = _files[i].path,
+                        isSelected = _files[i].isSelected
+                    };
+                    _files[i] = tmp;
+                }
+                selectAllFilesFlag = true;
+            }
+            
+            else
+            {
+                for(int i = 0; i < _files.Count; i++)
+                {
+                    _files[i].isSelected = false;
+
+                    File tmp = new File()
+                    {
+                        name = _files[i].name,
+                        newName = _files[i].newName,
+                        extension = _files[i].extension,
+                        path = _files[i].path,
+                        isSelected = _files[i].isSelected
+                    };
+                    _files[i] = tmp;
+                }
+                selectAllFilesFlag = false;
+            }
+        }
+
+        bool selectAllFoldersFlag = false;
+        private void selectAllFolders_Click(object sender, RoutedEventArgs e)
+        {
+            if (!selectAllFoldersFlag)
+            {
+                for (int i = 0; i < _folders.Count; i++)
+                {
+                    _folders[i].isSelected = true;
+
+                    File tmp = new File()
+                    {
+                        name= _folders[i].name,
+                        newName= _folders[i].newName,
+                        extension= _folders[i].extension,
+                        path= _folders[i].path,
+                        isSelected= _folders[i].isSelected
+                    };
+                    _folders[i] = tmp;
+                }
+                selectAllFoldersFlag = true;
+            }
+
+            else
+            {
+                for (int i = 0; i < _folders.Count; i++)
+                {
+                    _folders[i].isSelected = false;
+
+                    File tmp = new File()
+                    {
+                        name = _folders[i].name,
+                        newName = _folders[i].newName,
+                        extension = _folders[i].extension,
+                        path = _folders[i].path,
+                        isSelected = _folders[i].isSelected
+                    };
+                    _folders[i] = tmp;
+                }
+                selectAllFoldersFlag = false;
+            }
+        }
+
+        private void RemoveRule_Click(object sender, RoutedEventArgs e)
+        {
+            int i = rulesListView.SelectedIndex;
+            _addRules.RemoveAt(i);
         }
     }
 }
