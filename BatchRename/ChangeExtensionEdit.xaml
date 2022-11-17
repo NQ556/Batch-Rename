@@ -1,0 +1,43 @@
+﻿<Window x:Class="BatchRename.ChangeExtensionEdit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BatchRename"
+        mc:Ignorable="d"
+        Title="ChangeExtensionEdit" Height="180" Width="320" Background="#caecfc" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <StackPanel>
+        <TextBlock Text="Change extension:" TextAlignment="Center" Foreground="#39a2db" FontSize="25"/>
+        <TextBlock/>
+        
+        <DockPanel Height="30">
+            <TextBlock Width="10" />
+            <TextBlock Text="Enter extension:" Foreground="#39a2db" FontSize="20"/>
+        </DockPanel>
+
+        <DockPanel Height="30">
+            <TextBlock Width="10" />
+            <TextBox x:Name="InputExtension" Width="150" BorderBrush="#39a2db" HorizontalAlignment="Left"
+                     FontSize="14" Foreground="#39a2db" VerticalContentAlignment="Center"/>
+            <TextBlock Width="15" />
+            <Button x:Name="DoneButton" Content="Done" Width="50" HorizontalAlignment="Left"
+                    BorderBrush="#39a2db" Background="White" Foreground="#39a2db" Click="DoneButton_Click"/>
+            <TextBlock Width="15" />
+            <Button x:Name="CancelButton" Content="Cancel" Width="50" HorizontalAlignment="Left"
+                    BorderBrush="#39a2db" Background="White" Foreground="#39a2db" Click="CancelButton_Click"/>
+        </DockPanel>
+
+        <TextBlock Height="10"/>
+
+        <DockPanel>
+            <TextBlock Width="10" />
+            <TextBlock Text="Supported extension:" Foreground="#39a2db" FontStyle="Italic" FontSize="14"/>
+        </DockPanel>
+
+        <DockPanel>
+            <TextBlock Width="10" />
+            <TextBlock Text="jpg, png, doc, docx, pdf, txt, rar, zip, xlsx, ppt" Foreground="#39a2db" FontStyle="Italic"
+                   FontSize="14"/>
+        </DockPanel>
+    </StackPanel>
+</Window>

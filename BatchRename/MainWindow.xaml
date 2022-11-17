@@ -87,7 +87,7 @@
             <ListView x:Name="rulesListView" Background="#caecfc" Height="332" Margin="15,15,13,0" BorderBrush="#39a2db">
                 <ListView.Resources>
                     <ContextMenu x:Key="rulesListViewContextMenu">
-                        <MenuItem x:Name="EditRule" Header="Edit">
+                        <MenuItem x:Name="EditRule" Header="Edit" Click="EditRule_Click">
                             <MenuItem.Icon>
                                 <Image Source="/Images/edit.png"/>
                             </MenuItem.Icon>

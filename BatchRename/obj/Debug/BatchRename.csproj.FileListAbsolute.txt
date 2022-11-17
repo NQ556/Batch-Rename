@@ -29,3 +29,5 @@ E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.csproj.C
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.csproj.CopyComplete
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.exe
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\BatchRename.pdb
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\ChangeExtensionEdit.g.cs
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\ChangeExtensionEdit.baml

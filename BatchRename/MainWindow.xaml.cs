@@ -12,6 +12,9 @@ using System.Windows.Controls;
 using System.ComponentModel;
 using static System.Net.WebRequestMethods;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms;
+using System.Windows.Markup.Localizer;
+using MessageBox = System.Windows.MessageBox;
 
 namespace BatchRename
 {
@@ -296,7 +299,8 @@ namespace BatchRename
                 }
             } 
         }
-        
+
+        public static string inputNewExtension = "";
         private void previewButton_Click(object sender, RoutedEventArgs e)
         {
             foreach(var rule in _addRules)
@@ -307,24 +311,42 @@ namespace BatchRename
                 Type tmpType = assembly.GetType(fullTypeName);
                 var obj = Activator.CreateInstance(tmpType);
 
-                for (int i = 0; i < _files.Count; i++)
+                switch(type)
                 {
-                    string curExtension = _files[i].extension;
-                    string newExtension = "txt";
-                    var method = tmpType.GetMethod("change");
-                    string rename = method.Invoke(obj, new object[] { curExtension, newExtension }).ToString();
+                    case "ChangeExtension":
+                        var checkValid = tmpType.GetMethod("isValidExtension");
+                        bool isValid = bool.Parse(checkValid.Invoke(obj, new object[] { inputNewExtension }).ToString());
 
-                    var newFile = new File()
-                    {
-                        name = _files[i].name,
-                        newName = _files[i].name + rename,
-                        extension = curExtension,
-                        path = _files[i].path,
-                        isSelected = false
-                    };
+                        if (isValid)
+                        {
+                            for (int i = 0; i < _files.Count; i++)
+                            {
+                                string curExtension = _files[i].extension;
+                                var method = tmpType.GetMethod("change");
+                                string rename = method.Invoke(obj, new object[] { curExtension, inputNewExtension }).ToString();
+
+                                var newFile = new File()
+                                {
+                                    name = _files[i].name,
+                                    newName = _files[i].name + rename,
+                                    extension = curExtension,
+                                    path = _files[i].path,
+                                    isSelected = false
+                                };
+
+                                _files[i] = newFile;
+                            }
+                        }
+
+                        else
+                        {
+                            MessageBox.Show("Invalid extension", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+
+                        
+                        break;
                     
-                    _files[i] = newFile;
-                }  
+                }       
             }
         }
 
@@ -416,6 +438,29 @@ namespace BatchRename
         {
             int i = rulesListView.SelectedIndex;
             _addRules.RemoveAt(i);
+        }
+
+        private void EditRule_Click(object sender, RoutedEventArgs e)
+        {
+            int i = rulesListView.SelectedIndex;
+            string type = _addRules[i].ruleType;
+
+            switch (type)
+            {
+                case "ChangeExtension":
+                    getNewExtension(inputNewExtension);
+                    break;
+            }
+        }
+
+        private void getNewExtension(string newExtension)
+        {
+            Window screen = new ChangeExtensionEdit();
+
+            if (screen.ShowDialog() == true)
+            {
+ 
+            }
         }
     }
 }
