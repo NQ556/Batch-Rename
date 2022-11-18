@@ -1,0 +1,6 @@
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\AddCounter\bin\Debug\AddCounter.dll
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\AddCounter\bin\Debug\AddCounter.pdb
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\AddCounter\obj\Debug\AddCounter.csproj.AssemblyReference.cache
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\AddCounter\obj\Debug\AddCounter.csproj.CoreCompileInputs.cache
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\AddCounter\obj\Debug\AddCounter.dll
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\AddCounter\obj\Debug\AddCounter.pdb

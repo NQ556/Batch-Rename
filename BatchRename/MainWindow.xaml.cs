@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using System.Windows.Markup.Localizer;
 using MessageBox = System.Windows.MessageBox;
+using System.Diagnostics;
 
 namespace BatchRename
 {
@@ -308,7 +309,12 @@ namespace BatchRename
         public static string inputNumberOfDigits = "";
         private void previewButton_Click(object sender, RoutedEventArgs e)
         {
-            foreach(var rule in _addRules)
+            changeName();
+        }
+
+        private void changeName()
+        {
+            foreach (var rule in _addRules)
             {
                 string type = rule.ruleType;
                 string fullTypeName = type + "." + type;
@@ -316,7 +322,7 @@ namespace BatchRename
                 Type tmpType = assembly.GetType(fullTypeName);
                 var obj = Activator.CreateInstance(tmpType);
 
-                switch(type)
+                switch (type)
                 {
                     case "ChangeExtension":
                         changeExtension(obj, tmpType);
@@ -324,7 +330,7 @@ namespace BatchRename
                     case "AddCounter":
                         addCounter(obj, tmpType);
                         break;
-                }       
+                }
             }
         }
 
@@ -553,6 +559,61 @@ namespace BatchRename
             if (screen.ShowDialog() == true)
             {
 
+            }
+        }
+
+        private void startBatchButton_Click(object sender, RoutedEventArgs e)
+        {
+            string dir = "";
+            string newPath = "";
+            changeName();
+
+            if (_files.Count > 0)
+            {
+                for (int i = 0; i < _files.Count; i++)
+                {
+                    dir = Path.GetDirectoryName(_files[i].path);
+                    newPath = dir + "\\" + _files[i].newName;
+                    System.IO.File.Move(_files[i].path, newPath);
+                }
+                MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
+            }
+
+            else
+            {
+                MessageBox.Show("No files to batch", "Status", MessageBoxButton.OK);
+            }
+        }
+
+        private void batchToButton_Click(object sender, RoutedEventArgs e)
+        {
+            string newPath = "";
+            changeName();
+
+            if (_files.Count > 0)
+            {
+                var openFolderDialog = new CommonOpenFileDialog
+                {
+                    IsFolderPicker = true,
+                };
+                var res = openFolderDialog.ShowDialog();
+
+                if (res == CommonFileDialogResult.Ok)
+                {
+                    newPath = openFolderDialog.FileName;
+
+                    for (int i = 0; i < _files.Count; i++)
+                    {
+                        string tmpPath = newPath + "\\" + _files[i].newName;
+                        System.IO.File.Copy(_files[i].path, tmpPath, true);
+                    }
+                    MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
+                }
+
+                else
+                {
+                    MessageBox.Show("No files to batch", "Status", MessageBoxButton.OK);
+                }
             }
         }
     }
