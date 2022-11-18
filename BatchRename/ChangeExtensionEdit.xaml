@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BatchRename"
         mc:Ignorable="d"
-        Title="ChangeExtensionEdit" Height="180" Width="320" Background="#caecfc" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="ChangeExtensionEdit" Height="200" Width="320" Background="#caecfc" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel>
-        <TextBlock Text="Change extension:" TextAlignment="Center" Foreground="#39a2db" FontSize="25"/>
+        <TextBlock Text="Change extension" TextAlignment="Center" Foreground="#39a2db" FontSize="25"/>
         <TextBlock/>
         
         <DockPanel Height="30">

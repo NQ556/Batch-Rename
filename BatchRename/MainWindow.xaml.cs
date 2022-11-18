@@ -91,6 +91,9 @@ namespace BatchRename
                 case "ChangeExtension":
                     res = "Change file's extension";
                     break;
+                case "AddCounter":
+                    res = "Add counter to the end of file";
+                    break;
             }
             return res;
         }
@@ -301,6 +304,8 @@ namespace BatchRename
         }
 
         public static string inputNewExtension = "";
+        public static string inputSuffix = "";
+        public static string inputNumberOfDigits = "";
         private void previewButton_Click(object sender, RoutedEventArgs e)
         {
             foreach(var rule in _addRules)
@@ -314,39 +319,91 @@ namespace BatchRename
                 switch(type)
                 {
                     case "ChangeExtension":
-                        var checkValid = tmpType.GetMethod("isValidExtension");
-                        bool isValid = bool.Parse(checkValid.Invoke(obj, new object[] { inputNewExtension }).ToString());
-
-                        if (isValid)
-                        {
-                            for (int i = 0; i < _files.Count; i++)
-                            {
-                                string curExtension = _files[i].extension;
-                                var method = tmpType.GetMethod("change");
-                                string rename = method.Invoke(obj, new object[] { curExtension, inputNewExtension }).ToString();
-
-                                var newFile = new File()
-                                {
-                                    name = _files[i].name,
-                                    newName = _files[i].name + rename,
-                                    extension = curExtension,
-                                    path = _files[i].path,
-                                    isSelected = false
-                                };
-
-                                _files[i] = newFile;
-                            }
-                        }
-
-                        else
-                        {
-                            MessageBox.Show("Invalid extension", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-
-                        
+                        changeExtension(obj, tmpType);
                         break;
-                    
+                    case "AddCounter":
+                        addCounter(obj, tmpType);
+                        break;
                 }       
+            }
+        }
+
+        private void changeExtension(Object obj, Type type)
+        {
+            var checkValid = type.GetMethod("isValidExtension");
+            bool isValid = bool.Parse(checkValid.Invoke(obj, new object[] { inputNewExtension }).ToString());
+
+            if (!isValid && inputNewExtension != "")
+            {
+                MessageBox.Show("Invalid extension", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else if (inputNewExtension == "")
+            {
+                MessageBox.Show("The new extension field cannot be empty. Please input new extension.", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else
+            {
+                for (int i = 0; i < _files.Count; i++)
+                {
+                    string curExtension = _files[i].extension;
+                    var method = type.GetMethod("change");
+                    string rename = method.Invoke(obj, new object[] { curExtension, inputNewExtension }).ToString();
+                    var newFile = new File()
+                    {
+                        name = _files[i].name,
+                        newName = _files[i].name + rename,
+                        extension = curExtension,
+                        path = _files[i].path,
+                        isSelected = false
+                    };
+
+                    _files[i] = newFile;
+                }
+            }  
+        }
+
+        private void addCounter(Object obj, Type type)
+        {
+            var checkValid = type.GetMethod("isValidPositiveInteger");
+            bool isValidSuffix = bool.Parse(checkValid.Invoke(obj, new object[] { inputSuffix }).ToString());
+            bool isValidPadding = bool.Parse(checkValid.Invoke(obj, new object[] { inputNumberOfDigits }).ToString());
+
+            if ((!isValidSuffix && inputSuffix != "") || (!isValidPadding && inputNumberOfDigits != ""))
+            {
+                MessageBox.Show("Invalid suffix or invalid number of digits", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else if (inputSuffix == "")
+            {
+                MessageBox.Show("The suffix field cannot be empty. Please input suffix.", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else
+            {
+                string suffix = inputSuffix;
+                for (int i = 0; i < _files.Count; i++)
+                {
+                    string curName = _files[i].name + _files[i].extension;
+                    var method = type.GetMethod("change");
+                    
+                    string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits}).ToString();
+
+                    var newFile = new File()
+                    {
+                        name = _files[i].name,
+                        newName = rename,
+                        extension = _files[i].extension,
+                        path = _files[i].path,
+                        isSelected = false
+                    };
+                    _files[i] = newFile;
+
+                    int tmpSuffix = int.Parse(suffix);
+                    tmpSuffix++;
+                    suffix = tmpSuffix.ToString();
+                }
             }
         }
 
@@ -437,29 +494,43 @@ namespace BatchRename
         private void RemoveRule_Click(object sender, RoutedEventArgs e)
         {
             int i = rulesListView.SelectedIndex;
+            resetRule(_addRules[i].ruleType);
             _addRules.RemoveAt(i);
+        }
+
+        private void resetRule(string type)
+        {
+            switch (type)
+            {
+                case "ChangeExtension":
+                    inputNewExtension = "";
+                    break;
+                case "AddCounter":
+                    inputSuffix = "";
+                    inputNumberOfDigits = "";
+                    break;
+            }
         }
 
         private void EditRule_Click(object sender, RoutedEventArgs e)
         {
             int i = rulesListView.SelectedIndex;
             string type = _addRules[i].ruleType;
+            Window screen = null;
 
             switch (type)
             {
                 case "ChangeExtension":
-                    getNewExtension(inputNewExtension);
+                    screen = new ChangeExtensionEdit();
+                    break;
+                case "AddCounter":
+                    screen = new AddCounterEdit();
                     break;
             }
-        }
-
-        private void getNewExtension(string newExtension)
-        {
-            Window screen = new ChangeExtensionEdit();
 
             if (screen.ShowDialog() == true)
             {
- 
+
             }
         }
     }
