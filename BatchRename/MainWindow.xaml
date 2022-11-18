@@ -54,13 +54,13 @@
 
             <StackPanel Height="30" Margin="15,15,13,0" Orientation="Horizontal">
                 <Label x:Name="presetLabel" Content="Preset: " Foreground="#39a2db" FontSize="18"/>
-                <ComboBox x:Name="presetCombobox" Width="165" Margin="20,0,0,0"/>
-                <Button x:Name="deletePresetButton" Width="80" Height="30" 
+                <ComboBox x:Name="presetCombobox" Width="165" Margin="20,0,0,0" Foreground="#39a2db" FontSize="14"/>
+                <Button x:Name="addPresetButton" Width="80" Height="30" 
                         Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
-                        Margin="7,0,0,0">
+                        Margin="7,0,0,0" Click="addPresetButton_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/Images/delete.png" Width="20" Height="20"/>
-                        <TextBlock Text="Delete" Margin="5,0,0,0"/>
+                        <Image Source="/Images/add.png" Width="20" Height="20"/>
+                        <TextBlock Text="Add" Margin="5,0,0,0"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -115,7 +115,8 @@
 
             <StackPanel Height="30" Margin="15,15,13,0" Orientation="Horizontal">
                 <Button x:Name="savePresetButton" Width="95" Height="30" Margin="49,0,0,0"
-                        Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db">
+                        Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
+                        Click="savePresetButton_Click">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Images/save.png" Width="20" Height="20"/>
                         <TextBlock Text="Save preset" Margin="5,0,0,0"/>

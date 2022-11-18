@@ -16,6 +16,11 @@ using System.Windows.Forms;
 using System.Windows.Markup.Localizer;
 using MessageBox = System.Windows.MessageBox;
 using System.Diagnostics;
+using Newtonsoft.Json;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Window = System.Windows.Window;
+using ControlzEx.Standard;
+using System.Windows.Data;
 
 namespace BatchRename
 {
@@ -57,6 +62,7 @@ namespace BatchRename
             fileListView.Visibility = Visibility.Visible;
             folderListView.Visibility = Visibility.Hidden;
             loadDLL();
+            loadPreset();
         }
 
         private void loadDLL()
@@ -81,6 +87,26 @@ namespace BatchRename
                 };
                 _rules.Add(newRule);
                 ruleCombobox.Items.Add(newRule.ruleName);
+            }
+        }
+
+        private void loadPreset()
+        {
+            string appBaseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            string presetDir = appBaseDir + "Preset\\";
+
+            if (!Directory.Exists(presetDir))
+            {
+                Directory.CreateDirectory(presetDir);
+            }
+
+            DirectoryInfo d = new DirectoryInfo(presetDir);
+            FileInfo[] Files = d.GetFiles("*.json");
+            foreach (FileInfo file in Files)
+            {
+                string tmp = presetDir + file.Name;
+                string presetName = Path.GetFileNameWithoutExtension(tmp);
+                presetCombobox.Items.Add(presetName);
             }
         }
 
@@ -613,6 +639,97 @@ namespace BatchRename
                 else
                 {
                     MessageBox.Show("No files to batch", "Status", MessageBoxButton.OK);
+                }
+            }
+        }
+
+        private bool isPresetExisted(string name)
+        {
+            bool res = false;
+            for (int i = 0; i < presetCombobox.Items.Count; i++)
+            {
+                ComboBoxItem item = (ComboBoxItem)presetCombobox.ItemContainerGenerator.ContainerFromIndex(i); 
+                if (item.Content.ToString() == name)
+                {
+                    res = true;
+                }
+            }
+            return res;
+        }
+        private void savePresetButton_Click(object sender, RoutedEventArgs e)
+        {
+            string appBaseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            string presetDir = appBaseDir + "Preset";
+
+            if (!Directory.Exists(presetDir))
+            {
+                Directory.CreateDirectory(presetDir);
+            }
+
+            if (presetNameTextbox.Text == "")
+            {
+                MessageBox.Show("Preset name cannot be empty!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else if (_addRules.Count == 0)
+            {
+                MessageBox.Show("No rule was added!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else if (isPresetExisted(presetNameTextbox.Text))
+            {
+                MessageBox.Show("Preset already existed. Please enter a different name!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else
+            {
+                string presetName = presetNameTextbox.Text + ".json";
+                presetDir += "\\" + presetName;
+                System.IO.File.WriteAllText(presetDir, JsonConvert.SerializeObject(_addRules));
+                presetCombobox.Items.Add(presetNameTextbox.Text);
+                MessageBox.Show("Successfully save preset!", "", MessageBoxButton.OK);
+            }
+        }
+
+        private void addPresetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedPreset = (string)presetCombobox.SelectedValue;
+            string appBaseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            string presetDir = appBaseDir + "Preset\\";
+            List<Rule> _curRules = new List<Rule>();
+
+            if (!Directory.Exists(presetDir))
+            {
+                Directory.CreateDirectory(presetDir);
+            }
+
+            if (selectedPreset != null)
+            {
+                string presetName = selectedPreset.ToString();
+                string presetPath = presetDir + presetName + ".json";
+
+                if (!System.IO.File.Exists(presetPath))
+                {
+                    MessageBox.Show("This preset has been moved or deleted", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    presetCombobox.Items.RemoveAt(presetCombobox.SelectedIndex);
+                }
+
+                else
+                {
+                    _addRules.Clear();
+
+                    string json = System.IO.File.ReadAllText(presetPath);
+                    _curRules = JsonConvert.DeserializeObject<List<Rule>>(json);
+                    for (int i = 0; i < _curRules.Count; i++)
+                    {
+                        Rule newRule = new Rule()
+                        {
+                            ruleName = _curRules[i].ruleName,  
+                            ruleType = _curRules[i].ruleType,
+                            assembly = _curRules[i].assembly
+                        };
+                        _addRules.Add(newRule);
+                    }
                 }
             }
         }
