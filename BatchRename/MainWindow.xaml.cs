@@ -347,14 +347,26 @@ namespace BatchRename
             {
                 for (int i = 0; i < _files.Count; i++)
                 {
-                    string curExtension = _files[i].extension;
+                    string curName = "";
                     var method = type.GetMethod("change");
-                    string rename = method.Invoke(obj, new object[] { curExtension, inputNewExtension }).ToString();
+
+                    if (_files[i].newName != "")
+                    {
+                        curName = _files[i].newName;
+                    }
+
+                    else
+                    {
+                        curName = _files[i].name + _files[i].extension;
+                    }
+  
+                    string rename = method.Invoke(obj, new object[] { curName, inputNewExtension }).ToString();
+                    
                     var newFile = new File()
                     {
                         name = _files[i].name,
-                        newName = _files[i].name + rename,
-                        extension = curExtension,
+                        newName = rename,
+                        extension = _files[i].extension,
                         path = _files[i].path,
                         isSelected = false
                     };
@@ -385,8 +397,18 @@ namespace BatchRename
                 string suffix = inputSuffix;
                 for (int i = 0; i < _files.Count; i++)
                 {
-                    string curName = _files[i].name + _files[i].extension;
+                    string curName = "";
                     var method = type.GetMethod("change");
+
+                    if (_files[i].newName != "")
+                    {
+                        curName = _files[i].newName;
+                    }
+
+                    else
+                    {
+                        curName = _files[i].name + _files[i].extension;
+                    }                  
                     
                     string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits}).ToString();
 

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BatchRename"
         xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
                      mc:Ignorable="d"
-        Title="Batch Rename" Height="600" Width="1200" ResizeMode="NoResize" Loaded="RibbonWindow_Loaded">
+        Title="Batch Rename" Height="600" Width="1200" ResizeMode="NoResize" Loaded="RibbonWindow_Loaded" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="370"></ColumnDefinition>
@@ -239,7 +239,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-                            <GridViewColumn Header="Extension" Width="120">
+                            <GridViewColumn Header="Extension" Width="80">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding extension}" Foreground="#39a2db"/>
@@ -247,7 +247,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-                            <GridViewColumn Header="New file name" Width="180">
+                            <GridViewColumn Header="New file name" Width="220">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
@@ -292,7 +292,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-                            <GridViewColumn Header="Extension" Width="120">
+                            <GridViewColumn Header="Extension" Width="80">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding extension}" Foreground="#39a2db"/>
@@ -300,7 +300,7 @@
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
 
-                            <GridViewColumn Header="New folder name" Width="180">
+                            <GridViewColumn Header="New folder name" Width="220">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding newName}" Foreground="#39a2db"/>
