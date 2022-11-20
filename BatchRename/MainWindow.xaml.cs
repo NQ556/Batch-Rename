@@ -21,6 +21,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Window = System.Windows.Window;
 using ControlzEx.Standard;
 using System.Windows.Data;
+using System.Windows.Shell;
 
 namespace BatchRename
 {
@@ -41,7 +42,7 @@ namespace BatchRename
         public MainWindow()
         {
             InitializeComponent();
-            
+
         }
 
         ObservableCollection<File> _files = new ObservableCollection<File>();
@@ -81,9 +82,9 @@ namespace BatchRename
 
                 Rule newRule = new Rule()
                 {
-                   ruleName = getRuleName(type),
-                   ruleType = type,
-                   assembly = assembly
+                    ruleName = getRuleName(type),
+                    ruleType = type,
+                    assembly = assembly
                 };
                 _rules.Add(newRule);
                 ruleCombobox.Items.Add(newRule.ruleName);
@@ -148,14 +149,14 @@ namespace BatchRename
                 if (item.ruleType == type)
                 {
                     res = item.assembly;
-                }    
+                }
             }
             return res;
         }
-        
+
         private bool isFileExisted(File file)
         {
-            foreach(File item in _files)
+            foreach (File item in _files)
             {
                 if (file.name == item.name && file.path == item.path)
                 {
@@ -173,7 +174,7 @@ namespace BatchRename
             };
 
             openFileDialog.Multiselect = true;
-            var res = openFileDialog.ShowDialog(); 
+            var res = openFileDialog.ShowDialog();
 
             if (res == CommonFileDialogResult.Ok)
             {
@@ -230,7 +231,7 @@ namespace BatchRename
                 }
             }
         }
-       
+
         private bool isFolderExisted(File folder)
         {
             foreach (File item in _folders)
@@ -242,7 +243,7 @@ namespace BatchRename
             }
             return false;
         }
-        
+
         private void addFolderButton_Click(object sender, RoutedEventArgs e)
         {
             var openFolderDialog = new CommonOpenFileDialog
@@ -255,7 +256,7 @@ namespace BatchRename
 
             if (res == CommonFileDialogResult.Ok)
             {
-                foreach(string folderPath in openFolderDialog.FileNames)
+                foreach (string folderPath in openFolderDialog.FileNames)
                 {
                     string folderName = Path.GetFileName(folderPath);
 
@@ -274,7 +275,7 @@ namespace BatchRename
                 }
             }
         }
-        
+
         private void removeFolderButton_Click(object sender, RoutedEventArgs e)
         {
             List<File> _removedFolders = new List<File>();
@@ -327,12 +328,13 @@ namespace BatchRename
                 {
                     _addRules.Add(newRule);
                 }
-            } 
+            }
         }
 
         public static string inputNewExtension = "";
         public static string inputSuffix = "";
         public static string inputNumberOfDigits = "";
+        public static string inputSeparator = "";
         private void previewButton_Click(object sender, RoutedEventArgs e)
         {
             changeName();
@@ -391,9 +393,9 @@ namespace BatchRename
                     {
                         curName = _files[i].name + _files[i].extension;
                     }
-  
+
                     string rename = method.Invoke(obj, new object[] { curName, inputNewExtension }).ToString();
-                    
+
                     var newFile = new File()
                     {
                         name = _files[i].name,
@@ -405,7 +407,7 @@ namespace BatchRename
 
                     _files[i] = newFile;
                 }
-            }  
+            }
         }
 
         private void addCounter(Object obj, Type type)
@@ -427,6 +429,7 @@ namespace BatchRename
             else
             {
                 string suffix = inputSuffix;
+                string separator = inputSeparator;
                 for (int i = 0; i < _files.Count; i++)
                 {
                     string curName = "";
@@ -440,9 +443,9 @@ namespace BatchRename
                     else
                     {
                         curName = _files[i].name + _files[i].extension;
-                    }                  
-                    
-                    string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits}).ToString();
+                    }
+
+                    string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits, separator }).ToString();
 
                     var newFile = new File()
                     {
@@ -482,10 +485,10 @@ namespace BatchRename
                 }
                 selectAllFilesFlag = true;
             }
-            
+
             else
             {
-                for(int i = 0; i < _files.Count; i++)
+                for (int i = 0; i < _files.Count; i++)
                 {
                     _files[i].isSelected = false;
 
@@ -514,11 +517,11 @@ namespace BatchRename
 
                     File tmp = new File()
                     {
-                        name= _folders[i].name,
-                        newName= _folders[i].newName,
-                        extension= _folders[i].extension,
-                        path= _folders[i].path,
-                        isSelected= _folders[i].isSelected
+                        name = _folders[i].name,
+                        newName = _folders[i].newName,
+                        extension = _folders[i].extension,
+                        path = _folders[i].path,
+                        isSelected = _folders[i].isSelected
                     };
                     _folders[i] = tmp;
                 }
@@ -648,7 +651,7 @@ namespace BatchRename
             bool res = false;
             for (int i = 0; i < presetCombobox.Items.Count; i++)
             {
-                ComboBoxItem item = (ComboBoxItem)presetCombobox.ItemContainerGenerator.ContainerFromIndex(i); 
+                ComboBoxItem item = (ComboBoxItem)presetCombobox.ItemContainerGenerator.ContainerFromIndex(i);
                 if (item.Content.ToString() == name)
                 {
                     res = true;
@@ -717,6 +720,7 @@ namespace BatchRename
                 else
                 {
                     _addRules.Clear();
+                    presetNameTextbox.Text = presetName;
 
                     string json = System.IO.File.ReadAllText(presetPath);
                     _curRules = JsonConvert.DeserializeObject<List<Rule>>(json);
@@ -724,13 +728,33 @@ namespace BatchRename
                     {
                         Rule newRule = new Rule()
                         {
-                            ruleName = _curRules[i].ruleName,  
+                            ruleName = _curRules[i].ruleName,
                             ruleType = _curRules[i].ruleType,
                             assembly = _curRules[i].assembly
                         };
                         _addRules.Add(newRule);
                     }
                 }
+            }
+        }
+
+        private void removePresetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedPreset = (string)presetCombobox.SelectedValue;
+            string appBaseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            string presetDir = appBaseDir + "Preset\\";
+
+            if (presetCombobox.Items.Count != 0 && Directory.Exists(presetDir) && selectedPreset != null)
+            {
+                if (_addRules.Count != 0)
+                {
+                    _addRules.Clear();
+                }
+                presetDir += presetNameTextbox.Text + ".json";
+                presetCombobox.Items.RemoveAt(presetCombobox.SelectedIndex);
+                presetNameTextbox.Text = "";
+                System.IO.File.SetAttributes(presetDir, FileAttributes.Normal);
+                System.IO.File.Delete(presetDir);   
             }
         }
     }

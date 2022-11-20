@@ -28,7 +28,7 @@ namespace AddCounter
 
             return res;
         }
-        public string change(string curName, string suffix, string padding)
+        public string change(string curName, string suffix, string padding, string separator)
         {
             string res = "";
             string tmp = "";
@@ -40,15 +40,16 @@ namespace AddCounter
             {
                 int pad = int.Parse(padding);
                 tmp = Regex.Replace(suffix, paddingPattern, m => m.Value.PadLeft(pad, '0'));
-                res += name[0] + tmp + name[1];
+                res = name[0] + separator + tmp + name[1];
             }
 
             else
             {
-                res = name[0] + suffix + name[1];
+                res = name[0] + separator + suffix + name[1];
             }
 
             return res;
         }
     }
 }
+

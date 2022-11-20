@@ -28,6 +28,7 @@ namespace BatchRename
         {
             MainWindow.inputSuffix = suffixInput.Text;
             MainWindow.inputNumberOfDigits = paddingInput.Text;
+            MainWindow.inputSeparator = separatorInput.Text;
             DialogResult = true;
         }
 

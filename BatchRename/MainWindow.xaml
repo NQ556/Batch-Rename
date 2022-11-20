@@ -122,11 +122,12 @@
                         <TextBlock Text="Save preset" Margin="5,0,0,0"/>
                     </StackPanel>
                 </Button>
-                <Button x:Name="saveAsPresetButton" Width="115" Height="30" Margin="39,0,0,0"
-                        Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db">
+                <Button x:Name="removePresetButton" Width="115" Height="30" Margin="39,0,0,0"
+                        Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
+                        Click="removePresetButton_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/Images/save_as.png" Width="20" Height="20"/>
-                        <TextBlock Text="Save preset as" Margin="5,0,0,0"/>
+                        <Image Source="/Images/delete.png" Width="20" Height="20"/>
+                        <TextBlock Text="Remove preset" Margin="5,0,0,0"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
