@@ -8,17 +8,14 @@
         Title="AddCounterEdit" Height="220" Width="490" Background="#caecfc" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel>
         <TextBlock Text="Add counter" TextAlignment="Center" Foreground="#39a2db" FontSize="25"/>
-        <TextBlock Width="10"/>
 
-        <StackPanel Height="60" Orientation="Horizontal">
+        <StackPanel Height="60" Orientation="Horizontal" Margin="0,10,0,0">
             <StackPanel Width="150">
                 <DockPanel>
                     <TextBlock Text="Input suffix:" Foreground="#39a2db" FontSize="20" TextAlignment="Center"/>
                 </DockPanel>
 
-                <TextBlock Height="5"/>
-
-                <DockPanel>
+                <DockPanel Margin="0,5,0,0">
                     <TextBox x:Name="suffixInput" Width="100" Height="25" HorizontalAlignment="Center" 
                              BorderBrush="#39a2db" FontSize="14" Foreground="#39a2db" 
                              VerticalContentAlignment="Center"/>
@@ -30,9 +27,7 @@
                     <TextBlock Text="Input padding:" Foreground="#39a2db" FontSize="20" TextAlignment="Center"/>
                 </DockPanel>
 
-                <TextBlock Height="5"/>
-
-                <DockPanel>
+                <DockPanel Margin="0,5,0,0">
                     <TextBox x:Name="paddingInput" Width="100" Height="25" HorizontalAlignment="Center" 
                              BorderBrush="#39a2db" FontSize="14" Foreground="#39a2db" 
                              VerticalContentAlignment="Center"/>
@@ -41,26 +36,23 @@
 
             <StackPanel Width="190">
                 <TextBlock Text="Input separator:" Foreground="#39a2db" FontSize="20" TextAlignment="Center"/>
-                <TextBlock Height="5"/>
-                <DockPanel>
+
+                <DockPanel Margin="0,5,0,0">
                     <TextBox x:Name="separatorInput" Width="100" Height="25" HorizontalAlignment="Center" 
                              BorderBrush="#39a2db" FontSize="14" Foreground="#39a2db" 
                              VerticalContentAlignment="Center"/>
                 </DockPanel>
             </StackPanel>
         </StackPanel>
-       
-        <TextBlock Height="20"/>
 
-        <DockPanel Height="30">
+        <DockPanel Height="30" Margin="0,20,0,0">
             <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button x:Name="DoneButton" Width="80" Content="Done" Foreground="#39a2db"
                     Background="White" BorderBrush="#39a2db" Click="DoneButton_Click"/>
 
-                <TextBlock Width="30"/>
-
                 <Button x:Name="CancelButton" Width="80" Content="Cancel" Foreground="#39a2db"
-                    Background="White" BorderBrush="#39a2db" Click="CancelButton_Click"/>
+                    Background="White" BorderBrush="#39a2db" Margin="30,0,0,0"
+                    Click="CancelButton_Click"/>
             </StackPanel>
         </DockPanel>
     </StackPanel>

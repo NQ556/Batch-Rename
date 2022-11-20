@@ -122,6 +122,9 @@ namespace BatchRename
                 case "AddCounter":
                     res = "Add counter to the end of file";
                     break;
+                case "RemoveSpace":
+                    res = "Remove space";
+                    break;
             }
             return res;
         }
@@ -335,9 +338,34 @@ namespace BatchRename
         public static string inputSuffix = "";
         public static string inputNumberOfDigits = "";
         public static string inputSeparator = "";
+        public static bool isSelectedAll = false;
+        public static bool isSelectedEnd = false;
         private void previewButton_Click(object sender, RoutedEventArgs e)
         {
+            resetNewName();
             changeName();
+            inputNewExtension = "";
+            inputSuffix = "";
+            inputNumberOfDigits = "";
+            inputSeparator = "";
+            isSelectedAll = false;
+            isSelectedEnd = false;
+        }
+
+        private void resetNewName()
+        {
+            for (int i = 0; i < _files.Count; i++)
+            {
+                File tmp = new File()
+                {
+                    name = _files[i].name,
+                    extension = _files[i].extension,
+                    newName = "",
+                    path = _files[i].path,
+                    isSelected = _files[i].isSelected
+                };
+                _files[i] = tmp;
+            }
         }
 
         private void changeName()
@@ -358,6 +386,9 @@ namespace BatchRename
                     case "AddCounter":
                         addCounter(obj, tmpType);
                         break;
+                    case "RemoveSpace":
+                        removeSpace(obj, tmpType);
+                        break;
                 }
             }
         }
@@ -365,47 +396,56 @@ namespace BatchRename
         private void changeExtension(Object obj, Type type)
         {
             var checkValid = type.GetMethod("isValidExtension");
-            bool isValid = bool.Parse(checkValid.Invoke(obj, new object[] { inputNewExtension }).ToString());
+            string newExtension = inputNewExtension;
+            bool isValid = bool.Parse(checkValid.Invoke(obj, new object[] { newExtension }).ToString());
 
-            if (!isValid && inputNewExtension != "")
+            if (!isValid && newExtension != "")
             {
-                MessageBox.Show("Invalid extension", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Invalid extension!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            else if (inputNewExtension == "")
+            else if (newExtension == "")
             {
                 MessageBox.Show("The new extension field cannot be empty. Please input new extension.", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             else
             {
-                for (int i = 0; i < _files.Count; i++)
+                if (_files.Count == 0)
                 {
-                    string curName = "";
-                    var method = type.GetMethod("change");
+                    MessageBox.Show("No file to preview!", "", MessageBoxButton.OK);
+                }
 
-                    if (_files[i].newName != "")
+                else
+                {
+                    for (int i = 0; i < _files.Count; i++)
                     {
-                        curName = _files[i].newName;
+                        string curName = "";
+                        var method = type.GetMethod("change");
+
+                        if (_files[i].newName != "")
+                        {
+                            curName = _files[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _files[i].name + _files[i].extension;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, newExtension }).ToString();
+
+                        var newFile = new File()
+                        {
+                            name = _files[i].name,
+                            newName = rename,
+                            extension = _files[i].extension,
+                            path = _files[i].path,
+                            isSelected = false
+                        };
+
+                        _files[i] = newFile;
                     }
-
-                    else
-                    {
-                        curName = _files[i].name + _files[i].extension;
-                    }
-
-                    string rename = method.Invoke(obj, new object[] { curName, inputNewExtension }).ToString();
-
-                    var newFile = new File()
-                    {
-                        name = _files[i].name,
-                        newName = rename,
-                        extension = _files[i].extension,
-                        path = _files[i].path,
-                        isSelected = false
-                    };
-
-                    _files[i] = newFile;
                 }
             }
         }
@@ -418,7 +458,7 @@ namespace BatchRename
 
             if ((!isValidSuffix && inputSuffix != "") || (!isValidPadding && inputNumberOfDigits != ""))
             {
-                MessageBox.Show("Invalid suffix or invalid number of digits", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Invalid suffix or invalid number of digits!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             else if (inputSuffix == "")
@@ -430,36 +470,99 @@ namespace BatchRename
             {
                 string suffix = inputSuffix;
                 string separator = inputSeparator;
-                for (int i = 0; i < _files.Count; i++)
+
+                if (_files.Count == 0)
+                {
+                    MessageBox.Show("No file to preview!", "", MessageBoxButton.OK);
+                }
+
+                else
+                {
+                    for (int i = 0; i < _files.Count; i++)
+                    {
+                        string curName = "";
+                        var method = type.GetMethod("change");
+
+                        if (_files[i].newName != "")
+                        {
+                            curName = _files[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _files[i].name + _files[i].extension;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits, separator }).ToString();
+
+                        var newFile = new File()
+                        {
+                            name = _files[i].name,
+                            newName = rename,
+                            extension = _files[i].extension,
+                            path = _files[i].path,
+                            isSelected = false
+                        };
+                        _files[i] = newFile;
+
+                        int tmpSuffix = int.Parse(suffix);
+                        tmpSuffix++;
+                        suffix = tmpSuffix.ToString();
+                    }
+                }    
+            }
+        }
+
+        private void removeSpace(Object obj, Type type)
+        {
+            var method = type.GetMethod("change");
+            bool all = isSelectedAll;
+            bool end = isSelectedEnd;
+
+            if (!all && !end)
+            {
+                MessageBox.Show("You need to select one option.", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else if (all && end)
+            {
+                MessageBox.Show("You can choose only one option!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else
+            {
+                if (_files.Count == 0)
+                {
+                    MessageBox.Show("No file to preview!", "", MessageBoxButton.OK);
+                }
+
+                else
                 {
                     string curName = "";
-                    var method = type.GetMethod("change");
 
-                    if (_files[i].newName != "")
+                    for (int i = 0; i < _files.Count; i++)
                     {
-                        curName = _files[i].newName;
+                        if (_files[i].newName != "")
+                        {
+                            curName = _files[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _files[i].name + _files[i].extension;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, all, end }).ToString();
+                        var newFile = new File()
+                        {
+                            name = _files[i].name,
+                            newName = rename,
+                            extension = _files[i].extension,
+                            path = _files[i].path,
+                            isSelected = false
+                        };
+                        _files[i] = newFile;
                     }
-
-                    else
-                    {
-                        curName = _files[i].name + _files[i].extension;
-                    }
-
-                    string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits, separator }).ToString();
-
-                    var newFile = new File()
-                    {
-                        name = _files[i].name,
-                        newName = rename,
-                        extension = _files[i].extension,
-                        path = _files[i].path,
-                        isSelected = false
-                    };
-                    _files[i] = newFile;
-
-                    int tmpSuffix = int.Parse(suffix);
-                    tmpSuffix++;
-                    suffix = tmpSuffix.ToString();
                 }
             }
         }
@@ -583,6 +686,9 @@ namespace BatchRename
                 case "AddCounter":
                     screen = new AddCounterEdit();
                     break;
+                case "RemoveSpace":
+                    screen = new RemoveSpaceEdit();
+                    break;
             }
 
             if (screen.ShowDialog() == true)
@@ -595,6 +701,7 @@ namespace BatchRename
         {
             string dir = "";
             string newPath = "";
+            resetNewName();
             changeName();
 
             if (_files.Count > 0)
@@ -606,6 +713,12 @@ namespace BatchRename
                     System.IO.File.Move(_files[i].path, newPath);
                 }
                 MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
+                inputNewExtension = "";
+                inputSuffix = "";
+                inputNumberOfDigits = "";
+                inputSeparator = "";
+                isSelectedAll = false;
+                isSelectedEnd = false;
             }
 
             else
@@ -617,6 +730,7 @@ namespace BatchRename
         private void batchToButton_Click(object sender, RoutedEventArgs e)
         {
             string newPath = "";
+            resetNewName();
             changeName();
 
             if (_files.Count > 0)
@@ -637,6 +751,12 @@ namespace BatchRename
                         System.IO.File.Copy(_files[i].path, tmpPath, true);
                     }
                     MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
+                    inputNewExtension = "";
+                    inputSuffix = "";
+                    inputNumberOfDigits = "";
+                    inputSeparator = "";
+                    isSelectedAll = false;
+                    isSelectedEnd = false;
                 }
 
                 else

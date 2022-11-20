@@ -8,36 +8,32 @@
         Title="ChangeExtensionEdit" Height="200" Width="320" Background="#caecfc" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel>
         <TextBlock Text="Change extension" TextAlignment="Center" Foreground="#39a2db" FontSize="25"/>
-        <TextBlock/>
-        
-        <DockPanel Height="30">
-            <TextBlock Width="10" />
-            <TextBlock Text="Enter extension:" Foreground="#39a2db" FontSize="20"/>
+
+        <DockPanel Height="30" Margin="0, 10, 0, 0">
+            <TextBlock Text="Enter extension:" Foreground="#39a2db" FontSize="20" Margin="10, 0, 0, 0"/>
         </DockPanel>
 
         <DockPanel Height="30">
-            <TextBlock Width="10" />
             <TextBox x:Name="InputExtension" Width="150" BorderBrush="#39a2db" HorizontalAlignment="Left"
-                     FontSize="14" Foreground="#39a2db" VerticalContentAlignment="Center"/>
-            <TextBlock Width="15" />
+                     FontSize="14" Foreground="#39a2db" VerticalContentAlignment="Center" Margin="10,0,0,0"/>
+
             <Button x:Name="DoneButton" Content="Done" Width="50" HorizontalAlignment="Left"
-                    BorderBrush="#39a2db" Background="White" Foreground="#39a2db" Click="DoneButton_Click"/>
-            <TextBlock Width="15" />
+                    BorderBrush="#39a2db" Background="White" Foreground="#39a2db" Margin="15,0,0,0"
+                    Click="DoneButton_Click"/>
+
             <Button x:Name="CancelButton" Content="Cancel" Width="50" HorizontalAlignment="Left"
-                    BorderBrush="#39a2db" Background="White" Foreground="#39a2db" Click="CancelButton_Click"/>
+                    BorderBrush="#39a2db" Background="White" Foreground="#39a2db" Margin="15,0,0,0"
+                    Click="CancelButton_Click"/>
         </DockPanel>
 
-        <TextBlock Height="10"/>
-
-        <DockPanel>
-            <TextBlock Width="10" />
-            <TextBlock Text="Supported extension:" Foreground="#39a2db" FontStyle="Italic" FontSize="14"/>
+        <DockPanel Margin="0,10,0,0">
+            <TextBlock Text="Supported extension:" Foreground="#39a2db" FontStyle="Italic" 
+                       FontSize="14" Margin="10,0,0,0"/>
         </DockPanel>
 
         <DockPanel>
-            <TextBlock Width="10" />
             <TextBlock Text="jpg, png, doc, docx, pdf, txt, rar, zip, xlsx, ppt" Foreground="#39a2db" FontStyle="Italic"
-                   FontSize="14"/>
+                   FontSize="14" Margin="10,0,0,0"/>
         </DockPanel>
     </StackPanel>
 </Window>

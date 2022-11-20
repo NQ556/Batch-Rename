@@ -1,0 +1,6 @@
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\RemoveSpace\bin\Debug\RemoveSpace.dll
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\RemoveSpace\bin\Debug\RemoveSpace.pdb
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\RemoveSpace\obj\Debug\RemoveSpace.csproj.AssemblyReference.cache
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\RemoveSpace\obj\Debug\RemoveSpace.csproj.CoreCompileInputs.cache
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\RemoveSpace\obj\Debug\RemoveSpace.dll
+E:\Hoc Tap\LTW\Project 1\Rule library\ChangeExtension\RemoveSpace\obj\Debug\RemoveSpace.pdb
