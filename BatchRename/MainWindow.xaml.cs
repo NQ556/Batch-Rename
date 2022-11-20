@@ -344,12 +344,6 @@ namespace BatchRename
         {
             resetNewName();
             changeName();
-            inputNewExtension = "";
-            inputSuffix = "";
-            inputNumberOfDigits = "";
-            inputSeparator = "";
-            isSelectedAll = false;
-            isSelectedEnd = false;
         }
 
         private void resetNewName()
@@ -713,12 +707,6 @@ namespace BatchRename
                     System.IO.File.Move(_files[i].path, newPath);
                 }
                 MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
-                inputNewExtension = "";
-                inputSuffix = "";
-                inputNumberOfDigits = "";
-                inputSeparator = "";
-                isSelectedAll = false;
-                isSelectedEnd = false;
             }
 
             else
@@ -751,12 +739,6 @@ namespace BatchRename
                         System.IO.File.Copy(_files[i].path, tmpPath, true);
                     }
                     MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
-                    inputNewExtension = "";
-                    inputSuffix = "";
-                    inputNumberOfDigits = "";
-                    inputSeparator = "";
-                    isSelectedAll = false;
-                    isSelectedEnd = false;
                 }
 
                 else

@@ -29,11 +29,19 @@ namespace BatchRename
             if (allCheckBox.IsChecked == true)
             {
                 MainWindow.isSelectedAll = true;
+                MainWindow.isSelectedEnd = false;
             }
 
             if (endCheckBox.IsChecked == true)
             {
                 MainWindow.isSelectedEnd = true;
+                MainWindow.isSelectedAll = false;
+            }
+
+            if (allCheckBox.IsChecked == true && endCheckBox.IsChecked == true)
+            {
+                MainWindow.isSelectedEnd = true;
+                MainWindow.isSelectedAll = true;
             }
             DialogResult = true;
         }
