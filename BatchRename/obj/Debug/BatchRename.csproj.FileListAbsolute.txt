@@ -37,3 +37,5 @@ E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Newtonsoft.Json.dll
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\bin\Debug\Newtonsoft.Json.xml
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\RemoveSpaceEdit.g.cs
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\RemoveSpaceEdit.baml
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\ReplaceCharEdit.g.cs
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\ReplaceCharEdit.baml

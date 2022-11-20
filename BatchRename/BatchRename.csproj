@@ -82,6 +82,9 @@
     <Compile Include="RemoveSpaceEdit.xaml.cs">
       <DependentUpon>RemoveSpaceEdit.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ReplaceCharEdit.xaml.cs">
+      <DependentUpon>ReplaceCharEdit.xaml</DependentUpon>
+    </Compile>
     <Page Include="AddCounterEdit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -110,6 +113,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="RemoveSpaceEdit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ReplaceCharEdit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

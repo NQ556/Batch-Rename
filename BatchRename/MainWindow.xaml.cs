@@ -125,6 +125,9 @@ namespace BatchRename
                 case "RemoveSpace":
                     res = "Remove space";
                     break;
+                case "ReplaceChar":
+                    res = "Replace characters";
+                    break;
             }
             return res;
         }
@@ -340,6 +343,11 @@ namespace BatchRename
         public static string inputSeparator = "";
         public static bool isSelectedAll = false;
         public static bool isSelectedEnd = false;
+        public static bool isSelectedSpaceToChar = false;
+        public static bool isSelectedCharToSpace = false;
+        public static bool isSelectedCharToChar = false;
+        public static string inputOldChar = "";
+        public static string inputNewChar = "";
         private void previewButton_Click(object sender, RoutedEventArgs e)
         {
             resetNewName();
@@ -382,6 +390,9 @@ namespace BatchRename
                         break;
                     case "RemoveSpace":
                         removeSpace(obj, tmpType);
+                        break;
+                    case "ReplaceChar":
+                        replaceChar(obj, tmpType);
                         break;
                 }
             }
@@ -561,6 +572,167 @@ namespace BatchRename
             }
         }
 
+        private void replaceChar(Object obj, Type type)
+        {
+            bool spaceToChar = isSelectedSpaceToChar;
+            bool charToSpace = isSelectedCharToSpace;
+            bool charToChar = isSelectedCharToChar;
+            string rename = "";
+            string oldChar = inputOldChar;
+            string newChar = inputNewChar;
+            var spaceToCharMethod = type.GetMethod("changeSpaceToChar");
+            var charToSpaceMethod = type.GetMethod("changeCharToSpace");
+            var charToCharMethod = type.GetMethod("changeCharToChar");
+
+            if (!spaceToChar && !charToSpace && !charToChar)
+            {
+                MessageBox.Show("You need to select one option.", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else if (spaceToChar && charToSpace || spaceToChar && charToChar || charToSpace && charToChar)
+            {
+                MessageBox.Show("You can select only one option.", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            else
+            {
+                if (spaceToChar)
+                {
+                    if (newChar == "")
+                    {
+                        MessageBox.Show("New characters field cannot be empty!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                    else
+                    {
+                        if (_files.Count == 0)
+                        {
+                            MessageBox.Show("No file to preview!", "", MessageBoxButton.OK);
+                        }
+
+                        else
+                        {
+                            string curName = "";
+
+                            for (int i = 0; i < _files.Count; i++)
+                            {
+                                if (_files[i].newName != "")
+                                {
+                                    curName = _files[i].newName;
+                                }
+
+                                else
+                                {
+                                    curName = _files[i].name + _files[i].extension;
+                                }
+
+                                rename = charToSpaceMethod.Invoke(obj, new object[] { curName, oldChar }).ToString();
+                                var newFile = new File()
+                                {
+                                    name = _files[i].name,
+                                    newName = rename,
+                                    extension = _files[i].extension,
+                                    path = _files[i].path,
+                                    isSelected = false
+                                };
+                                _files[i] = newFile;
+                            }    
+                        }
+                    }
+                }
+            
+                if (charToSpace)
+                {
+                    if (oldChar == "")
+                    {
+                        MessageBox.Show("Old characters field cannot be empty!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                    else
+                    {
+                        if (_files.Count == 0)
+                        {
+                            MessageBox.Show("No file to preview!", "", MessageBoxButton.OK);
+                        }
+
+                        else
+                        {
+                            string curName = "";
+
+                            for (int i = 0; i < _files.Count; i++)
+                            {
+                                if (_files[i].newName != "")
+                                {
+                                    curName = _files[i].newName;
+                                }
+
+                                else
+                                {
+                                    curName = _files[i].name + _files[i].extension;
+                                }
+
+                                rename = spaceToCharMethod.Invoke(obj, new object[] { curName, newChar }).ToString();
+                                var newFile = new File()
+                                {
+                                    name = _files[i].name,
+                                    newName = rename,
+                                    extension = _files[i].extension,
+                                    path = _files[i].path,
+                                    isSelected = false
+                                };
+                                _files[i] = newFile;
+                            }
+                        }
+                    }
+                }
+
+                if (charToChar)
+                {
+                    if (oldChar == "" || newChar == "")
+                    {
+                        MessageBox.Show("Old characters or new characters field cannot be empty!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                    else
+                    {
+                        if (_files.Count == 0)
+                        {
+                            MessageBox.Show("No file to preview!", "", MessageBoxButton.OK);
+                        }
+
+                        else
+                        {
+                            string curName = "";
+
+                            for (int i = 0; i < _files.Count; i++)
+                            {
+                                if (_files[i].newName != "")
+                                {
+                                    curName = _files[i].newName;
+                                }
+
+                                else
+                                {
+                                    curName = _files[i].name + _files[i].extension;
+                                }
+
+                                rename = charToCharMethod.Invoke(obj, new object[] { curName, oldChar, newChar }).ToString();
+                                var newFile = new File()
+                                {
+                                    name = _files[i].name,
+                                    newName = rename,
+                                    extension = _files[i].extension,
+                                    path = _files[i].path,
+                                    isSelected = false
+                                };
+                                _files[i] = newFile;
+                            }
+                        }
+                    }
+                }
+            }    
+        }
+
         bool selectAllFilesFlag = false;
         private void selectAllFiles_Click(object sender, RoutedEventArgs e)
         {
@@ -662,6 +834,18 @@ namespace BatchRename
                 case "AddCounter":
                     inputSuffix = "";
                     inputNumberOfDigits = "";
+                    inputSeparator = "";
+                    break;
+                case "RemoveSpace":
+                    isSelectedAll = false;
+                    isSelectedEnd = false;
+                    break;
+                case "ReplaceChar":
+                    isSelectedSpaceToChar = false;
+                    isSelectedCharToSpace = false;
+                    isSelectedCharToChar = false;
+                    inputOldChar = "";
+                    inputNewChar = "";
                     break;
             }
         }
@@ -682,6 +866,9 @@ namespace BatchRename
                     break;
                 case "RemoveSpace":
                     screen = new RemoveSpaceEdit();
+                    break;
+                case "ReplaceChar":
+                    screen = new ReplaceCharEdit();
                     break;
             }
 
