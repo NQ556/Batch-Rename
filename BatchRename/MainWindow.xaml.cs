@@ -138,6 +138,9 @@ namespace BatchRename
                 case "ConvertLowercase":
                     res = "Convert all characters to lowercase, remove all spaces";
                     break;
+                case "ConvertPascalCase":
+                    res = "Convert filename to PascalCase";
+                    break;
             }
             return res;
         }
@@ -433,6 +436,9 @@ namespace BatchRename
                         break;
                     case "ConvertLowercase":
                         convertLowercase(obj, tmpType);
+                        break;
+                    case "ConvertPascalCase":
+                        convertPascalCase(obj, tmpType);
                         break;
                 }
             }
@@ -884,6 +890,38 @@ namespace BatchRename
             }
         }
 
+        private void convertPascalCase(Object obj, Type type)
+        {
+            for (int i = 0; i < _files.Count; i++)
+            {
+                string curName = "";
+                var method = type.GetMethod("change");
+
+                if (_files[i].newName != "")
+                {
+                    curName = _files[i].newName;
+                }
+
+                else
+                {
+                    curName = _files[i].name + _files[i].extension;
+                }
+
+                string rename = method.Invoke(obj, new object[] { curName }).ToString();
+
+                var newFile = new File()
+                {
+                    name = _files[i].name,
+                    newName = rename,
+                    extension = _files[i].extension,
+                    path = _files[i].path,
+                    isSelected = false
+                };
+
+                _files[i] = newFile;
+            }
+        }
+
         bool selectAllFilesFlag = false;
         private void selectAllFiles_Click(object sender, RoutedEventArgs e)
         {
@@ -1038,9 +1076,12 @@ namespace BatchRename
                 case "ConvertLowercase":
                     MessageBox.Show("Cannot edit this rule!", "", MessageBoxButton.OK);
                     break;
+                case "ConvertPascalCase":
+                    MessageBox.Show("Cannot edit this rule!", "", MessageBoxButton.OK);
+                    break;
             }
 
-            if (type != "ConvertLowercase")
+            if (type != "ConvertLowercase" && type != "ConvertPascalCase")
             {
                 if (screen.ShowDialog() == true) { }
             }           
