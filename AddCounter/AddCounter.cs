@@ -35,17 +35,28 @@ namespace AddCounter
             string pattern = @"(.[^\.]+$)";
             string paddingPattern = @"\d+";
             string[] name = Regex.Split(curName, pattern);
+            var builder = new StringBuilder();
 
             if (padding != "")
             {
                 int pad = int.Parse(padding);
                 tmp = Regex.Replace(suffix, paddingPattern, m => m.Value.PadLeft(pad, '0'));
-                res = name[0] + separator + tmp + name[1];
+                builder.Append(name[0]);
+                builder.Append(separator);
+                builder.Append(tmp);
+                builder.Append(name[1]);
+                //res = name[0] + separator + tmp + name[1];
+                res = builder.ToString();
             }
 
             else
             {
-                res = name[0] + separator + suffix + name[1];
+                //res = name[0] + separator + suffix + name[1];
+                builder.Append(name[0]);
+                builder.Append(separator);
+                builder.Append(suffix);
+                builder.Append(name[1]);
+                res = builder.ToString();
             }
 
             return res;

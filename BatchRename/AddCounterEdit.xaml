@@ -12,11 +12,11 @@
         <StackPanel Height="60" Orientation="Horizontal" Margin="0,10,0,0">
             <StackPanel Width="150">
                 <DockPanel>
-                    <TextBlock Text="Input suffix:" Foreground="#39a2db" FontSize="20" TextAlignment="Center"/>
+                    <TextBlock Text="Input counter:" Foreground="#39a2db" FontSize="20" TextAlignment="Center"/>
                 </DockPanel>
 
                 <DockPanel Margin="0,5,0,0">
-                    <TextBox x:Name="suffixInput" Width="100" Height="25" HorizontalAlignment="Center" 
+                    <TextBox x:Name="counterTextBox" Width="100" Height="25" HorizontalAlignment="Center" 
                              BorderBrush="#39a2db" FontSize="14" Foreground="#39a2db" 
                              VerticalContentAlignment="Center"/>
                 </DockPanel>

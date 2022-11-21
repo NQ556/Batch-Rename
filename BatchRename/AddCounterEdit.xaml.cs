@@ -26,13 +26,13 @@ namespace BatchRename
 
         private void show()
         {
-            suffixInput.Text = MainWindow.inputSuffix;
+            counterTextBox.Text = MainWindow.inputCounter;
             paddingInput.Text = MainWindow.inputNumberOfDigits;
             separatorInput.Text = separatorInput.Text;
         }
         private void DoneButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.inputSuffix = suffixInput.Text;
+            MainWindow.inputCounter = counterTextBox.Text;
             MainWindow.inputNumberOfDigits = paddingInput.Text;
             MainWindow.inputSeparator = separatorInput.Text;
             DialogResult = true;

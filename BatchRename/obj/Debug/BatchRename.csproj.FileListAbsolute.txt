@@ -39,3 +39,7 @@ E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\RemoveSpaceEdit.g.cs
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\RemoveSpaceEdit.baml
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\ReplaceCharEdit.g.cs
 E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\ReplaceCharEdit.baml
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\AddPrefixEdit.g.cs
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\AddSuffixEdit.g.cs
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\AddPrefixEdit.baml
+E:\Hoc Tap\LTW\Project 1\Batch-Rename\BatchRename\obj\Debug\AddSuffixEdit.baml

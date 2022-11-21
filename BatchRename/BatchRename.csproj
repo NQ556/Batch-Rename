@@ -79,6 +79,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddPrefixEdit.xaml.cs">
+      <DependentUpon>AddPrefixEdit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AddSuffixEdit.xaml.cs">
+      <DependentUpon>AddSuffixEdit.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RemoveSpaceEdit.xaml.cs">
       <DependentUpon>RemoveSpaceEdit.xaml</DependentUpon>
     </Compile>
@@ -86,6 +92,14 @@
       <DependentUpon>ReplaceCharEdit.xaml</DependentUpon>
     </Compile>
     <Page Include="AddCounterEdit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddPrefixEdit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddSuffixEdit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

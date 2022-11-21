@@ -9,13 +9,13 @@ namespace RemoveSpace
 {
     public class RemoveSpace
     {
-        public string change(string curName, bool begin, bool end, bool all)
+        public string change(string curName, bool all, bool end)
         {
             string res = "";
             string allPattern = @"\s";
-            string beginPattern = @"^(\s*)";
             string endPattern = @"(\s)+$";
             string namePattern = @"(.[^\.]+$)";
+            var builder = new StringBuilder();
 
             if (all)
             {
@@ -24,17 +24,12 @@ namespace RemoveSpace
 
             else
             {
-                if (begin)
-                {
-                    res = Regex.Replace(curName, beginPattern, "");
-                }
-
-                if (end)
-                {
-                    string[] name = Regex.Split(curName, namePattern);
-                    string tmp = Regex.Replace(curName, endPattern, "");
-                    res = tmp + name[1];
-                }
+                string[] name = Regex.Split(curName, namePattern);
+                string tmp = Regex.Replace(name[0], endPattern, "");
+                //res = tmp + name[1];
+                builder.Append(tmp);
+                builder.Append(name[1]);
+                res = builder.ToString();
             }
 
             return res;
