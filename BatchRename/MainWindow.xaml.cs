@@ -372,39 +372,81 @@ namespace BatchRename
         private void previewButton_Click(object sender, RoutedEventArgs e)
         {
             resetNewName();
-            if (_files.Count == 0)
-            {
-                MessageBox.Show("List files is empty!", "", MessageBoxButton.OK);
-            }
 
-            else if (_addRules.Count == 0)
+            if (fileListView.Visibility == Visibility.Visible)
             {
-                MessageBox.Show("List rules is empty!", "", MessageBoxButton.OK);
-            }
+                if (_files.Count == 0)
+                {
+                    MessageBox.Show("List files is empty!", "", MessageBoxButton.OK);
+                }
 
+                else if (_addRules.Count == 0)
+                {
+                    MessageBox.Show("List rules is empty!", "", MessageBoxButton.OK);
+                }
+
+                else
+                {
+                    changeFileName();
+                }
+            }
+            
             else
             {
-                changeName();
-            }  
+                if (_folders.Count == 0)
+                {
+                    MessageBox.Show("List folders is empty!", "", MessageBoxButton.OK);
+                }
+
+                else if (_addRules.Count == 0)
+                {
+                    MessageBox.Show("List rules is empty!", "", MessageBoxButton.OK);
+                }
+
+                else
+                {
+                    changeFolderName();
+                }
+            }
         }
 
         private void resetNewName()
         {
-            for (int i = 0; i < _files.Count; i++)
+            if (fileListView.Visibility == Visibility.Visible)
             {
-                File tmp = new File()
+                for (int i = 0; i < _files.Count; i++)
                 {
-                    name = _files[i].name,
-                    extension = _files[i].extension,
-                    newName = "",
-                    path = _files[i].path,
-                    isSelected = _files[i].isSelected
-                };
-                _files[i] = tmp;
+                    File tmp = new File()
+                    {
+                        name = _files[i].name,
+                        extension = _files[i].extension,
+                        newName = "",
+                        path = _files[i].path,
+                        isSelected = _files[i].isSelected
+                    };
+                    _files[i] = tmp;
+                }
             }
+
+            else
+            {
+                for (int i = 0; i < _folders.Count; i++)
+                {
+                    File tmp = new File()
+                    {
+                        name = _folders[i].name,
+                        extension = _folders[i].extension,
+                        newName = "",
+                        path = _folders[i].path,
+                        isSelected = _folders[i].isSelected
+                    };
+                    _folders[i] = tmp;
+                }
+            }
+            
         }
 
-        private void changeName()
+        private void changeFileName()
         {
             foreach (var rule in _addRules)
             {
@@ -418,6 +460,46 @@ namespace BatchRename
                 {
                     case "ChangeExtension":
                         changeExtension(obj, tmpType);
+                        break;
+                    case "AddCounter":
+                        addCounter(obj, tmpType);
+                        break;
+                    case "RemoveSpace":
+                        removeSpace(obj, tmpType);
+                        break;
+                    case "ReplaceChar":
+                        replaceChar(obj, tmpType);
+                        break;
+                    case "AddPrefix":
+                        addPrefix(obj, tmpType);
+                        break;
+                    case "AddSuffix":
+                        addSuffix(obj, tmpType);
+                        break;
+                    case "ConvertLowercase":
+                        convertLowercase(obj, tmpType);
+                        break;
+                    case "ConvertPascalCase":
+                        convertPascalCase(obj, tmpType);
+                        break;
+                }
+            }
+        }
+
+        private void changeFolderName()
+        {
+            foreach (var rule in _addRules)
+            {
+                string type = rule.ruleType;
+                string fullTypeName = type + "." + type;
+                Assembly assembly = getAssembly(type);
+                Type tmpType = assembly.GetType(fullTypeName);
+                var obj = Activator.CreateInstance(tmpType);
+
+                switch (type)
+                {
+                    case "ChangeExtension":
+                        MessageBox.Show("Cannot apply change extension rule on a folder!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                     case "AddCounter":
                         addCounter(obj, tmpType);
@@ -529,44 +611,78 @@ namespace BatchRename
             {
                 string suffix = inputCounter;
                 string separator = inputSeparator;
+                string curName = "";
 
-                for (int i = 0; i < _files.Count; i++)
+                if (fileListView.Visibility == Visibility.Visible)
                 {
-                    string curName = "";
                     var method = type.GetMethod("change");
-
-                    if (_files[i].newName != "")
+                    for (int i = 0; i < _files.Count; i++)
                     {
-                        curName = _files[i].newName;
+                        if (_files[i].newName != "")
+                        {
+                            curName = _files[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _files[i].name + _files[i].extension;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits, separator }).ToString();
+
+                        var newFile = new File()
+                        {
+                            name = _files[i].name,
+                            newName = rename,
+                            extension = _files[i].extension,
+                            path = _files[i].path,
+                            isSelected = false
+                        };
+                        _files[i] = newFile;
+
+                        int tmpSuffix = int.Parse(suffix);
+                        tmpSuffix++;
+                        suffix = tmpSuffix.ToString();
                     }
+                }
 
-                    else
+                else
+                {
+                    var method = type.GetMethod("changeFolderName");
+                    for (int i = 0; i < _folders.Count; i++)
                     {
-                        curName = _files[i].name + _files[i].extension;
+                        if (_folders[i].newName != "")
+                        {
+                            curName = _folders[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _folders[i].name;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits, separator }).ToString();
+
+                        var newFolder = new File()
+                        {
+                            name = _folders[i].name,
+                            newName = rename,
+                            extension = _folders[i].extension,
+                            path = _folders[i].path,
+                            isSelected = false
+                        };
+                        _folders[i] = newFolder;
+
+                        int tmpSuffix = int.Parse(suffix);
+                        tmpSuffix++;
+                        suffix = tmpSuffix.ToString();
                     }
-
-                    string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits, separator }).ToString();
-
-                    var newFile = new File()
-                    {
-                        name = _files[i].name,
-                        newName = rename,
-                        extension = _files[i].extension,
-                        path = _files[i].path,
-                        isSelected = false
-                    };
-                    _files[i] = newFile;
-
-                    int tmpSuffix = int.Parse(suffix);
-                    tmpSuffix++;
-                    suffix = tmpSuffix.ToString();
                 }
             }
         }
 
         private void removeSpace(Object obj, Type type)
         {
-            var method = type.GetMethod("change");
             bool all = isSelectedAll;
             bool end = isSelectedEnd;
 
@@ -584,28 +700,62 @@ namespace BatchRename
             {
                 string curName = "";
 
-                for (int i = 0; i < _files.Count; i++)
+                if (fileListView.Visibility == Visibility.Visible)
                 {
-                    if (_files[i].newName != "")
-                    {
-                        curName = _files[i].newName;
-                    }
+                    var method = type.GetMethod("change");
 
-                    else
+                    for (int i = 0; i < _files.Count; i++)
                     {
-                        curName = _files[i].name + _files[i].extension;
-                    }
+                        if (_files[i].newName != "")
+                        {
+                            curName = _files[i].newName;
+                        }
 
-                    string rename = method.Invoke(obj, new object[] { curName, all, end }).ToString();
-                    var newFile = new File()
+                        else
+                        {
+                            curName = _files[i].name + _files[i].extension;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, all, end }).ToString();
+                        var newFile = new File()
+                        {
+                            name = _files[i].name,
+                            newName = rename,
+                            extension = _files[i].extension,
+                            path = _files[i].path,
+                            isSelected = false
+                        };
+                        _files[i] = newFile;
+                    }
+                }
+
+                else
+                {
+                    var method = type.GetMethod("changeFolderName");
+
+                    for (int i = 0; i < _folders.Count; i++)
                     {
-                        name = _files[i].name,
-                        newName = rename,
-                        extension = _files[i].extension,
-                        path = _files[i].path,
-                        isSelected = false
-                    };
-                    _files[i] = newFile;
+                        if (_folders[i].newName != "")
+                        {
+                            curName = _folders[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _folders[i].name;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, all, end }).ToString();
+                        var newFolder = new File()
+                        {
+                            name = _folders[i].name,
+                            newName = rename,
+                            extension = _folders[i].extension,
+                            path = _folders[i].path,
+                            isSelected = false
+                        };
+                        _folders[i] = newFolder;
+                    }
                 }
             }
         }
@@ -620,9 +770,6 @@ namespace BatchRename
             string newChar1 = inputNewChar1;
             string oldChar2 = inputOldChar2;
             string newChar2 = inputNewChar2;
-            var spaceToCharMethod = type.GetMethod("changeSpaceToChar");
-            var charToSpaceMethod = type.GetMethod("changeCharToSpace");
-            var charToCharMethod = type.GetMethod("changeCharToChar");
 
             if (!spaceToChar && !charToSpace && !charToChar)
             {
@@ -654,28 +801,62 @@ namespace BatchRename
                         {
                             string curName = "";
 
-                            for (int i = 0; i < _files.Count; i++)
+                            if (fileListView.Visibility == Visibility.Visible)
                             {
-                                if (_files[i].newName != "")
-                                {
-                                    curName = _files[i].newName;
-                                }
+                                var spaceToCharMethod = type.GetMethod("changeSpaceToChar");
 
-                                else
+                                for (int i = 0; i < _files.Count; i++)
                                 {
-                                    curName = _files[i].name + _files[i].extension;
-                                }
+                                    if (_files[i].newName != "")
+                                    {
+                                        curName = _files[i].newName;
+                                    }
 
-                                rename = spaceToCharMethod.Invoke(obj, new object[] { curName, newChar1 }).ToString();
-                                var newFile = new File()
+                                    else
+                                    {
+                                        curName = _files[i].name + _files[i].extension;
+                                    }
+
+                                    rename = spaceToCharMethod.Invoke(obj, new object[] { curName, newChar1 }).ToString();
+                                    var newFile = new File()
+                                    {
+                                        name = _files[i].name,
+                                        newName = rename,
+                                        extension = _files[i].extension,
+                                        path = _files[i].path,
+                                        isSelected = false
+                                    };
+                                    _files[i] = newFile;
+                                }
+                            }
+
+                            else
+                            {
+                                var spaceToCharMethod = type.GetMethod("changeSpaceToCharFolder");
+
+                                for (int i = 0; i < _folders.Count; i++)
                                 {
-                                    name = _files[i].name,
-                                    newName = rename,
-                                    extension = _files[i].extension,
-                                    path = _files[i].path,
-                                    isSelected = false
-                                };
-                                _files[i] = newFile;
+                                    if (_folders[i].newName != "")
+                                    {
+                                        curName = _folders[i].newName;
+                                    }
+
+                                    else
+                                    {
+                                        curName = _folders[i].name;
+                                    }
+
+                                    rename = spaceToCharMethod.Invoke(obj, new object[] { curName, newChar1 }).ToString();
+                                    var newFolder = new File()
+                                    {
+                                        name = _folders[i].name,
+                                        newName = rename,
+                                        extension = _folders[i].extension,
+                                        path = _folders[i].path,
+                                        isSelected = false
+                                    };
+                                    _folders[i] = newFolder;
+                                }
                             }
                         }
                     }
@@ -691,29 +872,34 @@ namespace BatchRename
                         {
                             string curName = "";
 
-                            for (int i = 0; i < _files.Count; i++)
+                            if (fileListView.Visibility == Visibility.Visible)
                             {
-                                if (_files[i].newName != "")
-                                {
-                                    curName = _files[i].newName;
-                                }
+                                var charToSpaceMethod = type.GetMethod("changeCharToSpaceFolder");
 
-                                else
+                                for (int i = 0; i < _folders.Count; i++)
                                 {
-                                    curName = _files[i].name + _files[i].extension;
-                                }
+                                    if (_folders[i].newName != "")
+                                    {
+                                        curName = _folders[i].newName;
+                                    }
 
-                                rename = charToSpaceMethod.Invoke(obj, new object[] { curName, oldChar1 }).ToString();
-                                var newFile = new File()
-                                {
-                                    name = _files[i].name,
-                                    newName = rename,
-                                    extension = _files[i].extension,
-                                    path = _files[i].path,
-                                    isSelected = false
-                                };
-                                _files[i] = newFile;
-                            }
+                                    else
+                                    {
+                                        curName = _folders[i].name;
+                                    }
+
+                                    rename = charToSpaceMethod.Invoke(obj, new object[] { curName, oldChar1 }).ToString();
+                                    var newFolder = new File()
+                                    {
+                                        name = _folders[i].name,
+                                        newName = rename,
+                                        extension = _folders[i].extension,
+                                        path = _folders[i].path,
+                                        isSelected = false
+                                    };
+                                    _folders[i] = newFolder;
+                                }
+                            }  
                         }
                     }
 
@@ -728,28 +914,62 @@ namespace BatchRename
                         {
                             string curName = "";
 
-                            for (int i = 0; i < _files.Count; i++)
+                            if (fileListView.Visibility == Visibility.Visible)
                             {
-                                if (_files[i].newName != "")
-                                {
-                                    curName = _files[i].newName;
-                                }
+                                var charToCharMethod = type.GetMethod("changeCharToChar");
 
-                                else
+                                for (int i = 0; i < _files.Count; i++)
                                 {
-                                    curName = _files[i].name + _files[i].extension;
-                                }
+                                    if (_files[i].newName != "")
+                                    {
+                                        curName = _files[i].newName;
+                                    }
 
-                                rename = charToCharMethod.Invoke(obj, new object[] { curName, oldChar2, newChar2 }).ToString();
-                                var newFile = new File()
+                                    else
+                                    {
+                                        curName = _files[i].name + _files[i].extension;
+                                    }
+
+                                    rename = charToCharMethod.Invoke(obj, new object[] { curName, oldChar2, newChar2 }).ToString();
+                                    var newFile = new File()
+                                    {
+                                        name = _files[i].name,
+                                        newName = rename,
+                                        extension = _files[i].extension,
+                                        path = _files[i].path,
+                                        isSelected = false
+                                    };
+                                    _files[i] = newFile;
+                                }
+                            }
+
+                            else
+                            {
+                                var charToCharMethod = type.GetMethod("changeCharToCharFolder");
+
+                                for (int i = 0; i < _folders.Count; i++)
                                 {
-                                    name = _files[i].name,
-                                    newName = rename,
-                                    extension = _files[i].extension,
-                                    path = _files[i].path,
-                                    isSelected = false
-                                };
-                                _files[i] = newFile;
+                                    if (_folders[i].newName != "")
+                                    {
+                                        curName = _folders[i].newName;
+                                    }
+
+                                    else
+                                    {
+                                        curName = _folders[i].name;
+                                    }
+
+                                    rename = charToCharMethod.Invoke(obj, new object[] { curName, oldChar2, newChar2 }).ToString();
+                                    var newFolder = new File()
+                                    {
+                                        name = _folders[i].name,
+                                        newName = rename,
+                                        extension = _folders[i].extension,
+                                        path = _folders[i].path,
+                                        isSelected = false
+                                    };
+                                    _folders[i] = newFolder;
+                                }
                             }
                         }
                     }
@@ -779,35 +999,71 @@ namespace BatchRename
 
             else
             {
-                for (int i = 0; i < _files.Count; i++)
+                string curName = "";
+
+                if (fileListView.Visibility == Visibility.Visible)
                 {
-                    string curName = "";
                     var method = type.GetMethod("change");
 
-                    if (_files[i].newName != "")
+                    for (int i = 0; i < _files.Count; i++)
                     {
-                        curName = _files[i].newName;
+                        if (_files[i].newName != "")
+                        {
+                            curName = _files[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _files[i].name + _files[i].extension;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, prefix }).ToString();
+
+                        var newFile = new File()
+                        {
+                            name = _files[i].name,
+                            newName = rename,
+                            extension = _files[i].extension,
+                            path = _files[i].path,
+                            isSelected = false
+                        };
+
+                        _files[i] = newFile;
                     }
+                }
+            
+                else
+                {
+                    var method = type.GetMethod("changeFolderName");
 
-                    else
+                    for (int i = 0; i < _folders.Count; i++)
                     {
-                        curName = _files[i].name + _files[i].extension;
+                        if (_folders[i].newName != "")
+                        {
+                            curName = _folders[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _folders[i].name;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, prefix }).ToString();
+
+                        var newFolder = new File()
+                        {
+                            name = _folders[i].name,
+                            newName = rename,
+                            extension = _folders[i].extension,
+                            path = _folders[i].path,
+                            isSelected = false
+                        };
+
+                        _folders[i] = newFolder;
                     }
-
-                    string rename = method.Invoke(obj, new object[] { curName, prefix }).ToString();
-
-                    var newFile = new File()
-                    {
-                        name = _files[i].name,
-                        newName = rename,
-                        extension = _files[i].extension,
-                        path = _files[i].path,
-                        isSelected = false
-                    };
-
-                    _files[i] = newFile;
                 }
             }
+                
         }
 
         private void addSuffix(Object obj, Type type)
@@ -827,11 +1083,82 @@ namespace BatchRename
 
             else
             {
-                for (int i = 0; i < _files.Count; i++)
+                string curName = "";
+
+                if (fileListView.Visibility == Visibility.Visible)
                 {
-                    string curName = "";
                     var method = type.GetMethod("change");
 
+                    for (int i = 0; i < _files.Count; i++)
+                    {
+                        if (_files[i].newName != "")
+                        {
+                            curName = _files[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _files[i].name + _files[i].extension;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, suffix }).ToString();
+
+                        var newFile = new File()
+                        {
+                            name = _files[i].name,
+                            newName = rename,
+                            extension = _files[i].extension,
+                            path = _files[i].path,
+                            isSelected = false
+                        };
+
+                        _files[i] = newFile;
+                    }
+                }
+
+                else
+                {
+                    var method = type.GetMethod("changeFolderName");
+
+                    for (int i = 0; i < _folders.Count; i++)
+                    {
+                        if (_folders[i].newName != "")
+                        {
+                            curName = _folders[i].newName;
+                        }
+
+                        else
+                        {
+                            curName = _folders[i].name;
+                        }
+
+                        string rename = method.Invoke(obj, new object[] { curName, suffix }).ToString();
+
+                        var newFolder = new File()
+                        {
+                            name = _folders[i].name,
+                            newName = rename,
+                            extension = _folders[i].extension,
+                            path = _folders[i].path,
+                            isSelected = false
+                        };
+
+                        _folders[i] = newFolder;
+                    }
+                }
+            }
+        }
+
+        private void convertLowercase(Object obj, Type type)
+        {
+            string curName = "";
+
+            if (fileListView.Visibility == Visibility.Visible)
+            {
+                var method = type.GetMethod("change");
+
+                for (int i = 0; i < _files.Count; i++)
+                {
                     if (_files[i].newName != "")
                     {
                         curName = _files[i].newName;
@@ -842,7 +1169,7 @@ namespace BatchRename
                         curName = _files[i].name + _files[i].extension;
                     }
 
-                    string rename = method.Invoke(obj, new object[] { curName, suffix }).ToString();
+                    string rename = method.Invoke(obj, new object[] { curName }).ToString();
 
                     var newFile = new File()
                     {
@@ -856,69 +1183,103 @@ namespace BatchRename
                     _files[i] = newFile;
                 }
             }
-        }
-
-        private void convertLowercase(Object obj, Type type)
-        {
-            for (int i = 0; i < _files.Count; i++)
+            
+            else
             {
-                string curName = "";
-                var method = type.GetMethod("change");
+                var method = type.GetMethod("changeFolderName");
 
-                if (_files[i].newName != "")
+                for (int i = 0; i < _folders.Count; i++)
                 {
-                    curName = _files[i].newName;
+                    if (_folders[i].newName != "")
+                    {
+                        curName = _folders[i].newName;
+                    }
+
+                    else
+                    {
+                        curName = _folders[i].name;
+                    }
+
+                    string rename = method.Invoke(obj, new object[] { curName }).ToString();
+
+                    var newFolder = new File()
+                    {
+                        name = _folders[i].name,
+                        newName = rename,
+                        extension = _folders[i].extension,
+                        path = _folders[i].path,
+                        isSelected = false
+                    };
+
+                    _folders[i] = newFolder;
                 }
-
-                else
-                {
-                    curName = _files[i].name + _files[i].extension;
-                }
-
-                string rename = method.Invoke(obj, new object[] { curName }).ToString();
-
-                var newFile = new File()
-                {
-                    name = _files[i].name,
-                    newName = rename,
-                    extension = _files[i].extension,
-                    path = _files[i].path,
-                    isSelected = false
-                };
-
-                _files[i] = newFile;
             }
         }
 
         private void convertPascalCase(Object obj, Type type)
         {
-            for (int i = 0; i < _files.Count; i++)
+            string curName = "";
+
+            if (fileListView.Visibility == Visibility.Visible)
             {
-                string curName = "";
                 var method = type.GetMethod("change");
 
-                if (_files[i].newName != "")
+                for (int i = 0; i < _files.Count; i++)
                 {
-                    curName = _files[i].newName;
+                    if (_files[i].newName != "")
+                    {
+                        curName = _files[i].newName;
+                    }
+
+                    else
+                    {
+                        curName = _files[i].name + _files[i].extension;
+                    }
+
+                    string rename = method.Invoke(obj, new object[] { curName }).ToString();
+
+                    var newFile = new File()
+                    {
+                        name = _files[i].name,
+                        newName = rename,
+                        extension = _files[i].extension,
+                        path = _files[i].path,
+                        isSelected = false
+                    };
+
+                    _files[i] = newFile;
                 }
+            }
+            
+            else
+            {
+                var method = type.GetMethod("changeFolderName");
 
-                else
+                for (int i = 0; i < _folders.Count; i++)
                 {
-                    curName = _files[i].name + _files[i].extension;
+                    if (_folders[i].newName != "")
+                    {
+                        curName = _folders[i].newName;
+                    }
+
+                    else
+                    {
+                        curName = _folders[i].name;
+                    }
+
+                    string rename = method.Invoke(obj, new object[] { curName }).ToString();
+
+                    var newFolder = new File()
+                    {
+                        name = _folders[i].name,
+                        newName = rename,
+                        extension = _folders[i].extension,
+                        path = _folders[i].path,
+                        isSelected = false
+                    };
+
+                    _folders[i] = newFolder;
                 }
-
-                string rename = method.Invoke(obj, new object[] { curName }).ToString();
-
-                var newFile = new File()
-                {
-                    name = _files[i].name,
-                    newName = rename,
-                    extension = _files[i].extension,
-                    path = _files[i].path,
-                    isSelected = false
-                };
-
-                _files[i] = newFile;
             }
         }
 
@@ -1092,55 +1453,115 @@ namespace BatchRename
             string dir = "";
             string newPath = "";
             resetNewName();
-            changeName();
 
-            if (_files.Count > 0)
+            if (fileListView.Visibility == Visibility.Visible)
             {
-                for (int i = 0; i < _files.Count; i++)
-                {
-                    dir = Path.GetDirectoryName(_files[i].path);
-                    newPath = dir + "\\" + _files[i].newName;
-                    System.IO.File.Move(_files[i].path, newPath);
-                }
-                MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
-            }
+                changeFileName();
 
+                if (_files.Count > 0)
+                {
+                    for (int i = 0; i < _files.Count; i++)
+                    {
+                        dir = Path.GetDirectoryName(_files[i].path);
+                        newPath = dir + "\\" + _files[i].newName;
+                        System.IO.File.Move(_files[i].path, newPath);
+                    }
+                    MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
+                }
+
+                else
+                {
+                    MessageBox.Show("No files to batch", "Status", MessageBoxButton.OK);
+                }
+            }
+            
             else
             {
-                MessageBox.Show("No files to batch", "Status", MessageBoxButton.OK);
+                changeFolderName();
+
+                if (_folders.Count > 0)
+                {
+                    for (int i = 0; i < _folders.Count; i++)
+                    {
+                        dir = Path.GetDirectoryName(_folders[i].path);
+                        newPath = dir + "\\" + _folders[i].newName;
+                        System.IO.File.Move(_folders[i].path, newPath);
+                    }
+                    MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
+                }
+
+                else
+                {
+                    MessageBox.Show("No folders to batch", "Status", MessageBoxButton.OK);
+                }
             }
         }
 
         private void batchToButton_Click(object sender, RoutedEventArgs e)
         {
             string newPath = "";
-            resetNewName();
-            changeName();
+            resetNewName();   
 
-            if (_files.Count > 0)
+            if (fileListView.Visibility == Visibility.Visible)
             {
-                var openFolderDialog = new CommonOpenFileDialog
-                {
-                    IsFolderPicker = true,
-                };
-                var res = openFolderDialog.ShowDialog();
+                changeFileName();
 
-                if (res == CommonFileDialogResult.Ok)
+                if (_files.Count > 0)
                 {
-                    newPath = openFolderDialog.FileName;
-
-                    for (int i = 0; i < _files.Count; i++)
+                    var openFolderDialog = new CommonOpenFileDialog
                     {
-                        string tmpPath = newPath + "\\" + _files[i].newName;
-                        System.IO.File.Copy(_files[i].path, tmpPath, true);
+                        IsFolderPicker = true,
+                    };
+                    var res = openFolderDialog.ShowDialog();
+
+                    if (res == CommonFileDialogResult.Ok)
+                    {
+                        newPath = openFolderDialog.FileName;
+
+                        for (int i = 0; i < _files.Count; i++)
+                        {
+                            string tmpPath = newPath + "\\" + _files[i].newName;
+                            System.IO.File.Copy(_files[i].path, tmpPath, true);
+                        }
+                        MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
                     }
-                    MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
-                }  
+                }
+
+                else
+                {
+                    MessageBox.Show("No files to batch", "Status", MessageBoxButton.OK);
+                }
             }
 
             else
             {
-                MessageBox.Show("No files to batch", "Status", MessageBoxButton.OK);
+                changeFolderName();
+
+                if (_folders.Count > 0)
+                {
+                    var openFolderDialog = new CommonOpenFileDialog
+                    {
+                        IsFolderPicker = true,
+                    };
+                    var res = openFolderDialog.ShowDialog();
+
+                    if (res == CommonFileDialogResult.Ok)
+                    {
+                        newPath = openFolderDialog.FileName;
+
+                        for (int i = 0; i < _folders.Count; i++)
+                        {
+                            string tmpPath = newPath + "\\" + _folders[i].newName;
+                            System.IO.File.Copy(_folders[i].path, tmpPath, true);
+                        }
+                        MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
+                    }
+                }
+
+                else
+                {
+                    MessageBox.Show("No folders to batch", "Status", MessageBoxButton.OK);
+                }
             }
         }
 
