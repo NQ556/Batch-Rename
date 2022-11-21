@@ -24,6 +24,12 @@ namespace BatchRename
             InitializeComponent();
         }
 
+        private void show()
+        {
+            suffixInput.Text = MainWindow.inputSuffix;
+            paddingInput.Text = MainWindow.inputNumberOfDigits;
+            separatorInput.Text = separatorInput.Text;
+        }
         private void DoneButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.inputSuffix = suffixInput.Text;

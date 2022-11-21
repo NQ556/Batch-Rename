@@ -24,6 +24,7 @@ namespace BatchRename
         public ChangeExtensionEdit()
         {
             InitializeComponent();
+            InputExtension.Text = MainWindow.inputNewExtension;
         }
         
         private void DoneButton_Click(object sender, RoutedEventArgs e)

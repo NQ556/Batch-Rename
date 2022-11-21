@@ -22,27 +22,18 @@ namespace BatchRename
         public RemoveSpaceEdit()
         {
             InitializeComponent();
+            show();
         }
 
+        private void show()
+        {
+            allCheckBox.IsChecked = MainWindow.isSelectedAll;
+            endCheckBox.IsChecked = MainWindow.isSelectedEnd;
+        }
         private void DoneButton_Click(object sender, RoutedEventArgs e)
         {
-            if (allCheckBox.IsChecked == true)
-            {
-                MainWindow.isSelectedAll = true;
-                MainWindow.isSelectedEnd = false;
-            }
-
-            if (endCheckBox.IsChecked == true)
-            {
-                MainWindow.isSelectedEnd = true;
-                MainWindow.isSelectedAll = false;
-            }
-
-            if (allCheckBox.IsChecked == true && endCheckBox.IsChecked == true)
-            {
-                MainWindow.isSelectedEnd = true;
-                MainWindow.isSelectedAll = true;
-            }
+            MainWindow.isSelectedAll = allCheckBox.IsChecked ?? false;
+            MainWindow.isSelectedEnd = endCheckBox.IsChecked ?? false;
             DialogResult = true;
         }
 

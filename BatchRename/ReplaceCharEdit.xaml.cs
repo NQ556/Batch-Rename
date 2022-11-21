@@ -22,28 +22,29 @@ namespace BatchRename
         public ReplaceCharEdit()
         {
             InitializeComponent();
+            show();
         }
 
+        private void show()
+        {
+            spaceToCharCheckBox.IsChecked = MainWindow.isSelectedSpaceToChar;
+            charToSpaceCheckBox.IsChecked = MainWindow.isSelectedCharToSpace;
+            charToCharCheckBox.IsChecked = MainWindow.isSelectedCharToChar;
+            oldChar1TextBox.Text = MainWindow.inputOldChar1;
+            oldChar2TextBox.Text = MainWindow.inputOldChar2;
+            newChar1TextBox.Text = MainWindow.inputNewChar1;
+            newChar2TextBox.Text = MainWindow.inputNewChar2;
+        }
         private void DoneButton_Click(object sender, RoutedEventArgs e)
         {
-            if (spaceToCharCheckBox.IsChecked == true)
-            {
-                MainWindow.isSelectedSpaceToChar = true;
-                MainWindow.inputNewChar = newChar1TextBox.Text;
-            }
-
-            if (charToSpaceCheckBox.IsChecked == true)
-            {
-                MainWindow.isSelectedCharToSpace = true;
-                MainWindow.inputOldChar = oldChar1TextBox.Text;
-            }
-
-            if (charToCharCheckBox.IsChecked == true)
-            {
-                MainWindow.isSelectedCharToChar = true;
-                MainWindow.inputOldChar = oldChar2TextBox.Text;
-                MainWindow.inputNewChar = newChar2TextBox.Text; 
-            }
+            MainWindow.isSelectedSpaceToChar = spaceToCharCheckBox.IsChecked ?? false;
+            MainWindow.isSelectedCharToSpace = charToSpaceCheckBox.IsChecked ?? false;
+            MainWindow.isSelectedCharToChar = charToCharCheckBox.IsChecked ?? false;
+            MainWindow.inputOldChar1 = oldChar1TextBox.Text; 
+            MainWindow.inputOldChar2 = oldChar2TextBox.Text;
+            MainWindow.inputNewChar1 = newChar1TextBox.Text;
+            MainWindow.inputNewChar2 = newChar2TextBox.Text;
+           
             DialogResult = true;
         }
 

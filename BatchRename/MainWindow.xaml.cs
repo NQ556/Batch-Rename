@@ -338,16 +338,21 @@ namespace BatchRename
         }
 
         public static string inputNewExtension = "";
+
         public static string inputSuffix = "";
         public static string inputNumberOfDigits = "";
         public static string inputSeparator = "";
+
         public static bool isSelectedAll = false;
         public static bool isSelectedEnd = false;
+
         public static bool isSelectedSpaceToChar = false;
         public static bool isSelectedCharToSpace = false;
         public static bool isSelectedCharToChar = false;
-        public static string inputOldChar = "";
-        public static string inputNewChar = "";
+        public static string inputOldChar1 = "";
+        public static string inputNewChar1 = "";
+        public static string inputOldChar2 = "";
+        public static string inputNewChar2 = "";
         private void previewButton_Click(object sender, RoutedEventArgs e)
         {
             resetNewName();
@@ -578,8 +583,10 @@ namespace BatchRename
             bool charToSpace = isSelectedCharToSpace;
             bool charToChar = isSelectedCharToChar;
             string rename = "";
-            string oldChar = inputOldChar;
-            string newChar = inputNewChar;
+            string oldChar1 = inputOldChar1;
+            string newChar1 = inputNewChar1;
+            string oldChar2 = inputOldChar2;
+            string newChar2 = inputNewChar2;
             var spaceToCharMethod = type.GetMethod("changeSpaceToChar");
             var charToSpaceMethod = type.GetMethod("changeCharToSpace");
             var charToCharMethod = type.GetMethod("changeCharToChar");
@@ -595,10 +602,10 @@ namespace BatchRename
             }
 
             else
-            {
+            {      
                 if (spaceToChar)
                 {
-                    if (newChar == "")
+                    if (newChar1 == "")
                     {
                         MessageBox.Show("New characters field cannot be empty!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
@@ -626,7 +633,7 @@ namespace BatchRename
                                     curName = _files[i].name + _files[i].extension;
                                 }
 
-                                rename = charToSpaceMethod.Invoke(obj, new object[] { curName, oldChar }).ToString();
+                                rename = spaceToCharMethod.Invoke(obj, new object[] { curName, newChar1 }).ToString();
                                 var newFile = new File()
                                 {
                                     name = _files[i].name,
@@ -643,7 +650,7 @@ namespace BatchRename
             
                 if (charToSpace)
                 {
-                    if (oldChar == "")
+                    if (oldChar1 == "")
                     {
                         MessageBox.Show("Old characters field cannot be empty!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
@@ -671,7 +678,7 @@ namespace BatchRename
                                     curName = _files[i].name + _files[i].extension;
                                 }
 
-                                rename = spaceToCharMethod.Invoke(obj, new object[] { curName, newChar }).ToString();
+                                rename = charToSpaceMethod.Invoke(obj, new object[] { curName, oldChar1 }).ToString();
                                 var newFile = new File()
                                 {
                                     name = _files[i].name,
@@ -688,7 +695,7 @@ namespace BatchRename
 
                 if (charToChar)
                 {
-                    if (oldChar == "" || newChar == "")
+                    if (oldChar2 == "" || newChar2 == "")
                     {
                         MessageBox.Show("Old characters or new characters field cannot be empty!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
@@ -716,7 +723,7 @@ namespace BatchRename
                                     curName = _files[i].name + _files[i].extension;
                                 }
 
-                                rename = charToCharMethod.Invoke(obj, new object[] { curName, oldChar, newChar }).ToString();
+                                rename = charToCharMethod.Invoke(obj, new object[] { curName, oldChar2, newChar2 }).ToString();
                                 var newFile = new File()
                                 {
                                     name = _files[i].name,
@@ -844,8 +851,10 @@ namespace BatchRename
                     isSelectedSpaceToChar = false;
                     isSelectedCharToSpace = false;
                     isSelectedCharToChar = false;
-                    inputOldChar = "";
-                    inputNewChar = "";
+                    inputOldChar1 = "";
+                    inputNewChar1 = "";
+                    inputOldChar2 = "";
+                    inputNewChar2 = "";
                     break;
             }
         }
@@ -926,12 +935,12 @@ namespace BatchRename
                         System.IO.File.Copy(_files[i].path, tmpPath, true);
                     }
                     MessageBox.Show("Batch successfully!", "Status", MessageBoxButton.OK);
-                }
+                }  
+            }
 
-                else
-                {
-                    MessageBox.Show("No files to batch", "Status", MessageBoxButton.OK);
-                }
+            else
+            {
+                MessageBox.Show("No files to batch", "Status", MessageBoxButton.OK);
             }
         }
 
