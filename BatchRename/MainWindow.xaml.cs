@@ -22,6 +22,7 @@ using Window = System.Windows.Window;
 using ControlzEx.Standard;
 using System.Windows.Data;
 using System.Windows.Shell;
+using System.Text.RegularExpressions;
 
 namespace BatchRename
 {
@@ -433,12 +434,18 @@ namespace BatchRename
 
         private bool isValidFileName(string chr)
         {
-            if (chr == "\\" || chr == "/" || chr == ":" || chr == "?" || chr == ">" || chr == "<" || chr == "|" || chr == "\"" || chr == "*")
+            string pattern = @"[\\/:" + "\"" + "*?<>|]";
+            Regex re = new Regex(pattern, RegexOptions.IgnoreCase);
+
+            if (re.IsMatch(chr))
             {
                 return false;
             }
 
-            return true;
+            else
+            {
+                return true;
+            }
         }
 
         private void changeExtension(Object obj, Type type)
