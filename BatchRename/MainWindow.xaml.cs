@@ -23,6 +23,8 @@ using ControlzEx.Standard;
 using System.Windows.Data;
 using System.Windows.Shell;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography.X509Certificates;
+using System.Data;
 
 namespace BatchRename
 {
@@ -32,14 +34,6 @@ namespace BatchRename
     /// 
     public partial class MainWindow : RibbonWindow
     {
-        class Rule : INotifyPropertyChanged
-        {
-            public string ruleName { get; set; }
-            public string ruleType { get; set; }
-            public Assembly assembly { get; set; }
-            public event PropertyChangedEventHandler PropertyChanged;
-        }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -316,13 +310,13 @@ namespace BatchRename
             }
         }
 
-        private bool isRuleExisted(Rule rule)
+        private bool isExtensionRuleExisted(Rule rule)
         {
             bool res = false;
 
             foreach (Rule item in _addRules)
             {
-                if (item.ruleName == rule.ruleName && item.ruleType == rule.ruleType)
+                if (item.ruleType == "ChangeExtension" && rule.ruleType == "ChangeExtension")
                 {
                     res = true;
                 }
@@ -340,12 +334,32 @@ namespace BatchRename
                 Rule newRule = new Rule()
                 {
                     ruleName = ruleName,
-                    ruleType = ruleType
+                    ruleType = ruleType,
+                    newExtension = "",
+                    counter = "",
+                    numberOfDigits = "",
+                    separator = "",
+                    selectedAll = false,
+                    selectedEnd = false,
+                    selectedSpaceToChar = false,
+                    selectedCharToSpace = false,
+                    selectedCharToChar = false,
+                    oldChar1 = "",
+                    newChar1 = "",
+                    oldChar2 = "",
+                    newChar2 = "",
+                    prefix = "",
+                    suffix = ""
                 };
 
-                if (!isRuleExisted(newRule))
+                if (!isExtensionRuleExisted(newRule))
                 {
                     _addRules.Add(newRule);
+                }
+
+                else
+                {
+                    MessageBox.Show("Cannot add more than one change extension rule!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -448,9 +462,9 @@ namespace BatchRename
 
         private void changeFileName()
         {
-            foreach (var rule in _addRules)
+            for (int i = 0; i < _addRules.Count; i++)
             {
-                string type = rule.ruleType;
+                string type = _addRules[i].ruleType;
                 string fullTypeName = type + "." + type;
                 Assembly assembly = getAssembly(type);
                 Type tmpType = assembly.GetType(fullTypeName);
@@ -459,22 +473,22 @@ namespace BatchRename
                 switch (type)
                 {
                     case "ChangeExtension":
-                        changeExtension(obj, tmpType);
+                        changeExtension(obj, tmpType, i);
                         break;
                     case "AddCounter":
-                        addCounter(obj, tmpType);
+                        addCounter(obj, tmpType, i);
                         break;
                     case "RemoveSpace":
-                        removeSpace(obj, tmpType);
+                        removeSpace(obj, tmpType, i);
                         break;
                     case "ReplaceChar":
-                        replaceChar(obj, tmpType);
+                        replaceChar(obj, tmpType, i);
                         break;
                     case "AddPrefix":
-                        addPrefix(obj, tmpType);
+                        addPrefix(obj, tmpType, i);
                         break;
                     case "AddSuffix":
-                        addSuffix(obj, tmpType);
+                        addSuffix(obj, tmpType, i);
                         break;
                     case "ConvertLowercase":
                         convertLowercase(obj, tmpType);
@@ -488,9 +502,9 @@ namespace BatchRename
 
         private void changeFolderName()
         {
-            foreach (var rule in _addRules)
+            for (int i = 0; i < _addRules.Count; i++)
             {
-                string type = rule.ruleType;
+                string type = _addRules[i].ruleType;
                 string fullTypeName = type + "." + type;
                 Assembly assembly = getAssembly(type);
                 Type tmpType = assembly.GetType(fullTypeName);
@@ -502,19 +516,19 @@ namespace BatchRename
                         MessageBox.Show("Cannot apply change extension rule on a folder!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                     case "AddCounter":
-                        addCounter(obj, tmpType);
+                        addCounter(obj, tmpType, i);
                         break;
                     case "RemoveSpace":
-                        removeSpace(obj, tmpType);
+                        removeSpace(obj, tmpType, i);
                         break;
                     case "ReplaceChar":
-                        replaceChar(obj, tmpType);
+                        replaceChar(obj, tmpType, i);
                         break;
                     case "AddPrefix":
-                        addPrefix(obj, tmpType);
+                        addPrefix(obj, tmpType, i);
                         break;
                     case "AddSuffix":
-                        addSuffix(obj, tmpType);
+                        addSuffix(obj, tmpType, i);
                         break;
                     case "ConvertLowercase":
                         convertLowercase(obj, tmpType);
@@ -542,10 +556,10 @@ namespace BatchRename
             }
         }
 
-        private void changeExtension(Object obj, Type type)
+        private void changeExtension(Object obj, Type type, int index)
         {
             var checkValid = type.GetMethod("isValidExtension");
-            string newExtension = inputNewExtension;
+            string newExtension = _addRules[index].newExtension;
             bool isValid = bool.Parse(checkValid.Invoke(obj, new object[] { newExtension }).ToString());
 
             if (!isValid && newExtension != "" || !isValidFileName(newExtension) && newExtension != "")
@@ -591,26 +605,28 @@ namespace BatchRename
             }
         }
 
-        private void addCounter(Object obj, Type type)
+        private void addCounter(Object obj, Type type, int index)
         {
-            var checkValid = type.GetMethod("isValidPositiveInteger");
-            bool isValidSuffix = bool.Parse(checkValid.Invoke(obj, new object[] { inputCounter }).ToString());
-            bool isValidPadding = bool.Parse(checkValid.Invoke(obj, new object[] { inputNumberOfDigits }).ToString());
+            string counter = _addRules[index].counter;
+            string numberOfDigits = _addRules[index].numberOfDigits;
+            string separator = _addRules[index].separator;  
 
-            if ((!isValidSuffix && !isValidFileName(inputCounter) && inputCounter != "") || (!isValidPadding && !isValidFileName(inputNumberOfDigits) && inputNumberOfDigits != ""))
+            var checkValid = type.GetMethod("isValidPositiveInteger");
+            bool isValidSuffix = bool.Parse(checkValid.Invoke(obj, new object[] { counter }).ToString());
+            bool isValidPadding = bool.Parse(checkValid.Invoke(obj, new object[] { numberOfDigits }).ToString());
+
+            if ((!isValidSuffix && !isValidFileName(counter) && counter != "") || (!isValidPadding && !isValidFileName(numberOfDigits) && numberOfDigits != ""))
             {
-                MessageBox.Show("Invalid suffix or invalid number of digits!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Invalid counter or invalid number of digits!", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            else if (inputCounter == "")
+            else if (counter == "")
             {
-                MessageBox.Show("The suffix field cannot be empty. Please input suffix.", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("The counter field cannot be empty. Please input counter.", "Input error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             else
             {
-                string suffix = inputCounter;
-                string separator = inputSeparator;
                 string curName = "";
 
                 if (fileListView.Visibility == Visibility.Visible)
@@ -628,7 +644,7 @@ namespace BatchRename
                             curName = _files[i].name + _files[i].extension;
                         }
 
-                        string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits, separator }).ToString();
+                        string rename = method.Invoke(obj, new object[] { curName, counter, numberOfDigits, separator }).ToString();
 
                         var newFile = new File()
                         {
@@ -640,9 +656,9 @@ namespace BatchRename
                         };
                         _files[i] = newFile;
 
-                        int tmpSuffix = int.Parse(suffix);
+                        int tmpSuffix = int.Parse(counter);
                         tmpSuffix++;
-                        suffix = tmpSuffix.ToString();
+                        counter = tmpSuffix.ToString();
                     }
                 }
 
@@ -661,7 +677,7 @@ namespace BatchRename
                             curName = _folders[i].name;
                         }
 
-                        string rename = method.Invoke(obj, new object[] { curName, suffix, inputNumberOfDigits, separator }).ToString();
+                        string rename = method.Invoke(obj, new object[] { curName, counter, numberOfDigits, separator }).ToString();
 
                         var newFolder = new File()
                         {
@@ -673,18 +689,18 @@ namespace BatchRename
                         };
                         _folders[i] = newFolder;
 
-                        int tmpSuffix = int.Parse(suffix);
+                        int tmpSuffix = int.Parse(counter);
                         tmpSuffix++;
-                        suffix = tmpSuffix.ToString();
+                        counter = tmpSuffix.ToString();
                     }
                 }
             }
         }
 
-        private void removeSpace(Object obj, Type type)
+        private void removeSpace(Object obj, Type type, int index)
         {
-            bool all = isSelectedAll;
-            bool end = isSelectedEnd;
+            bool all = _addRules[index].selectedAll;
+            bool end = _addRules[index].selectedEnd;
 
             if (!all && !end)
             {
@@ -760,16 +776,16 @@ namespace BatchRename
             }
         }
 
-        private void replaceChar(Object obj, Type type)
+        private void replaceChar(Object obj, Type type, int index)
         {
-            bool spaceToChar = isSelectedSpaceToChar;
-            bool charToSpace = isSelectedCharToSpace;
-            bool charToChar = isSelectedCharToChar;
+            bool spaceToChar = _addRules[index].selectedSpaceToChar;
+            bool charToSpace = _addRules[index].selectedCharToSpace;
+            bool charToChar = _addRules[index].selectedCharToChar;
             string rename = "";
-            string oldChar1 = inputOldChar1;
-            string newChar1 = inputNewChar1;
-            string oldChar2 = inputOldChar2;
-            string newChar2 = inputNewChar2;
+            string oldChar1 = _addRules[index].oldChar1;
+            string newChar1 = _addRules[index].newChar1;
+            string oldChar2 = _addRules[index].oldChar2;
+            string newChar2 = _addRules[index].newChar2;
 
             if (!spaceToChar && !charToSpace && !charToChar)
             {
@@ -977,9 +993,9 @@ namespace BatchRename
             }    
         }
 
-        private void addPrefix(Object obj, Type type)
+        private void addPrefix(Object obj, Type type, int index)
         {
-            string prefix = inputPrefix;
+            string prefix = _addRules[index].prefix;
             
             if (prefix == "")
             {
@@ -1066,9 +1082,9 @@ namespace BatchRename
                 
         }
 
-        private void addSuffix(Object obj, Type type)
+        private void addSuffix(Object obj, Type type, int index)
         {
-            string suffix = inputSuffix;
+            string suffix = _addRules[index].suffix;
 
             if (suffix == "")
             {
@@ -1370,42 +1386,31 @@ namespace BatchRename
         private void RemoveRule_Click(object sender, RoutedEventArgs e)
         {
             int i = rulesListView.SelectedIndex;
-            resetRule(_addRules[i].ruleType);
             _addRules.RemoveAt(i);
         }
 
-        private void resetRule(string type)
+        private void resetRule()
         {
-            switch (type)
-            {
-                case "ChangeExtension":
-                    inputNewExtension = "";
-                    break;
-                case "AddCounter":
-                    inputCounter = "";
-                    inputNumberOfDigits = "";
-                    inputSeparator = "";
-                    break;
-                case "RemoveSpace":
-                    isSelectedAll = false;
-                    isSelectedEnd = false;
-                    break;
-                case "ReplaceChar":
-                    isSelectedSpaceToChar = false;
-                    isSelectedCharToSpace = false;
-                    isSelectedCharToChar = false;
-                    inputOldChar1 = "";
-                    inputNewChar1 = "";
-                    inputOldChar2 = "";
-                    inputNewChar2 = "";
-                    break;
-                case "AddPrefix":
-                    inputPrefix = "";
-                    break;
-                case "AddSuffix":
-                    inputSuffix = "";
-                    break;
-            }
+            inputNewExtension = "";
+
+            inputCounter = "";
+            inputNumberOfDigits = "";
+            inputSeparator = "";
+
+            isSelectedAll = false;
+            isSelectedEnd = false;
+
+            isSelectedSpaceToChar = false;
+            isSelectedCharToSpace = false;
+            isSelectedCharToChar = false;
+            inputOldChar1 = "";
+            inputNewChar1 = "";
+            inputOldChar2 = "";
+            inputNewChar2 = "";
+
+            inputPrefix = "";
+
+            inputSuffix = "";
         }
 
         private void EditRule_Click(object sender, RoutedEventArgs e)
@@ -1417,21 +1422,36 @@ namespace BatchRename
             switch (type)
             {
                 case "ChangeExtension":
+                    inputNewExtension = _addRules[i].newExtension;
                     screen = new ChangeExtensionEdit();
                     break;
                 case "AddCounter":
+                    inputCounter = _addRules[i].counter;
+                    inputNumberOfDigits = _addRules[i].numberOfDigits;
+                    inputSeparator = _addRules[i].separator;
                     screen = new AddCounterEdit();
                     break;
                 case "RemoveSpace":
+                    isSelectedAll = _addRules[i].selectedAll;
+                    isSelectedEnd = _addRules[i].selectedEnd;
                     screen = new RemoveSpaceEdit();
                     break;
                 case "ReplaceChar":
+                    isSelectedSpaceToChar = _addRules[i].selectedSpaceToChar;
+                    isSelectedCharToSpace = _addRules[i].selectedCharToSpace;
+                    isSelectedCharToChar = _addRules[i].selectedCharToChar;
+                    inputNewChar1 = _addRules[i].newChar1;
+                    inputOldChar1 = _addRules[i].oldChar1;
+                    inputNewChar2 = _addRules[i].newChar2;
+                    inputOldChar2 = _addRules[i].oldChar2;
                     screen = new ReplaceCharEdit();
                     break;
                 case "AddPrefix":
+                    inputPrefix = _addRules[i].prefix;
                     screen = new AddPrefixEdit();
                     break;
                 case "AddSuffix":
+                    inputSuffix = _addRules[i].suffix;
                     screen = new AddSuffixEdit();
                     break;
                 case "ConvertLowercase":
@@ -1444,8 +1464,39 @@ namespace BatchRename
 
             if (type != "ConvertLowercase" && type != "ConvertPascalCase")
             {
-                if (screen.ShowDialog() == true) { }
-            }           
+                if (screen.ShowDialog() == true) 
+                {
+                    editRule(i);
+                }
+            }
+
+            resetRule();
+        }
+
+        private void editRule(int index)
+        {
+            Rule editedRule = new Rule()
+            {
+                ruleName = _addRules[index].ruleName,
+                ruleType = _addRules[index].ruleType,
+                assembly = _addRules[index].assembly,
+                newExtension = inputNewExtension,
+                counter = inputCounter,
+                numberOfDigits = inputNumberOfDigits,
+                separator = inputSeparator,
+                selectedAll = isSelectedAll,
+                selectedEnd = isSelectedEnd,
+                selectedSpaceToChar = isSelectedSpaceToChar,
+                selectedCharToSpace = isSelectedCharToSpace,
+                selectedCharToChar = isSelectedCharToChar,
+                oldChar1 = inputOldChar1,
+                newChar1 = inputNewChar1,
+                oldChar2 = inputOldChar2,
+                newChar2 = inputNewChar2,
+                prefix = inputPrefix,
+                suffix = inputSuffix
+            };
+            _addRules[index] = editedRule;
         }
 
         private void startBatchButton_Click(object sender, RoutedEventArgs e)
@@ -1600,7 +1651,18 @@ namespace BatchRename
 
             else if (isPresetExisted(presetNameTextbox.Text))
             {
-                MessageBox.Show("Preset already existed. Please enter a different name!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxResult result = MessageBox.Show("Preset already existed. Do you want to overwrite this preset?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        string presetName = presetNameTextbox.Text + ".json";
+                        presetDir += "\\" + presetName;
+                        System.IO.File.WriteAllText(presetDir, JsonConvert.SerializeObject(_addRules));
+                        MessageBox.Show("Successfully save preset!", "", MessageBoxButton.OK);
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                }
             }
 
             else
@@ -1649,7 +1711,22 @@ namespace BatchRename
                         {
                             ruleName = _curRules[i].ruleName,
                             ruleType = _curRules[i].ruleType,
-                            assembly = _curRules[i].assembly
+                            assembly = _curRules[i].assembly,
+                            newExtension = _curRules[i].newExtension,
+                            counter = _curRules[i].counter,
+                            numberOfDigits = _curRules[i].numberOfDigits,
+                            separator = _curRules[i].separator,
+                            selectedAll = _curRules[i].selectedAll,
+                            selectedEnd = _curRules[i].selectedEnd,
+                            selectedSpaceToChar = _curRules[i].selectedSpaceToChar,
+                            selectedCharToSpace = _curRules[i].selectedCharToSpace,
+                            selectedCharToChar = _curRules[i].selectedCharToChar,
+                            oldChar1 = _curRules[i].oldChar1,
+                            newChar1 = _curRules[i].newChar1,
+                            oldChar2 = _curRules[i].oldChar2,
+                            newChar2 = _curRules[i].newChar2,
+                            prefix = _curRules[i].prefix,
+                            suffix = _curRules[i].suffix
                         };
                         _addRules.Add(newRule);
                     }
@@ -1665,15 +1742,23 @@ namespace BatchRename
 
             if (presetCombobox.Items.Count != 0 && Directory.Exists(presetDir) && selectedPreset != null)
             {
-                if (_addRules.Count != 0)
+                MessageBoxResult result = MessageBox.Show("Do you want to remove this preset?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                switch (result)
                 {
-                    _addRules.Clear();
+                    case MessageBoxResult.Yes:
+                        if (_addRules.Count != 0)
+                        {
+                            _addRules.Clear();
+                        }
+                        presetDir += presetNameTextbox.Text + ".json";
+                        presetCombobox.Items.RemoveAt(presetCombobox.SelectedIndex);
+                        presetNameTextbox.Text = "";
+                        System.IO.File.SetAttributes(presetDir, FileAttributes.Normal);
+                        System.IO.File.Delete(presetDir);
+                        break;
+                    case MessageBoxResult.No:
+                        break;
                 }
-                presetDir += presetNameTextbox.Text + ".json";
-                presetCombobox.Items.RemoveAt(presetCombobox.SelectedIndex);
-                presetNameTextbox.Text = "";
-                System.IO.File.SetAttributes(presetDir, FileAttributes.Normal);
-                System.IO.File.Delete(presetDir);   
             }
         }
     }

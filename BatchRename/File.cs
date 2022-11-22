@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BatchRename
 {
-    public class File : INotifyPropertyChanged, ICloneable
+    public class File : INotifyPropertyChanged
     {
         public string name { get; set; }
         public string newName { get; set; }
@@ -17,10 +17,5 @@ namespace BatchRename
         public bool isSelected { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public object Clone()
-        {
-            return MemberwiseClone();
-        }
     }
 }

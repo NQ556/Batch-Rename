@@ -91,6 +91,7 @@
     <Compile Include="ReplaceCharEdit.xaml.cs">
       <DependentUpon>ReplaceCharEdit.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Rule.cs" />
     <Page Include="AddCounterEdit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
