@@ -17,7 +17,7 @@
             <StackPanel Height="30" Margin="15,15,13,0" Orientation="Horizontal">
                 <Button x:Name="newWorkButton" Width="80" Height="30" 
                         Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
-                        Margin="0,0,0,0">
+                        Margin="0,0,0,0" Click="newWorkButton_Click">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Images/new.png" Width="20" Height="20"/>
                         <TextBlock Text="New" Margin="5,0,0,0"/>
@@ -26,7 +26,7 @@
 
                 <Button x:Name="openWorkButton" Width="80" Height="30" 
                         Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
-                        Margin="7,0,0,0">
+                        Margin="7,0,0,0" Click="openWorkButton_Click">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Images/open.png" Width="20" Height="20"/>
                         <TextBlock Text="Open" Margin="5,0,0,0"/>
@@ -35,7 +35,7 @@
 
                 <Button x:Name="saveWorkButton" Width="80" Height="30" 
                         Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
-                        Margin="7,0,0,0">
+                        Margin="7,0,0,0" Click="saveWorkButton_Click">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Images/save.png" Width="20" Height="20"/>
                         <TextBlock Text="Save" Margin="5,0,0,0"/>
@@ -44,7 +44,7 @@
 
                 <Button x:Name="saveAsWorkButton" Width="80" Height="30" 
                         Background="Transparent" BorderBrush="#39a2db" Foreground="#39a2db"
-                        Margin="7,0,0,0">
+                        Margin="7,0,0,0" Click="saveAsWorkButton_Click">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Images/save_as.png" Width="20" Height="20"/>
                         <TextBlock Text="Save as" Margin="5,0,0,0"/>

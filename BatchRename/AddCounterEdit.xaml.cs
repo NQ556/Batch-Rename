@@ -22,13 +22,14 @@ namespace BatchRename
         public AddCounterEdit()
         {
             InitializeComponent();
+            show();
         }
 
         private void show()
         {
             counterTextBox.Text = MainWindow.inputCounter;
             paddingInput.Text = MainWindow.inputNumberOfDigits;
-            separatorInput.Text = separatorInput.Text;
+            separatorInput.Text = MainWindow.inputSeparator;
         }
         private void DoneButton_Click(object sender, RoutedEventArgs e)
         {

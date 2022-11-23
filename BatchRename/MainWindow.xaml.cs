@@ -7,24 +7,13 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Reflection;
-using System.Web.ApplicationServices;
 using System.Windows.Controls;
-using System.ComponentModel;
-using static System.Net.WebRequestMethods;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using System.Windows.Markup.Localizer;
 using MessageBox = System.Windows.MessageBox;
-using System.Diagnostics;
 using Newtonsoft.Json;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Window = System.Windows.Window;
-using ControlzEx.Standard;
-using System.Windows.Data;
-using System.Windows.Shell;
 using System.Text.RegularExpressions;
-using System.Security.Cryptography.X509Certificates;
-using System.Data;
+using Microsoft.WindowsAPICodePack.Net;
 
 namespace BatchRename
 {
@@ -43,6 +32,7 @@ namespace BatchRename
         ObservableCollection<File> _files = new ObservableCollection<File>();
         ObservableCollection<File> _folders = new ObservableCollection<File>();
         ObservableCollection<Rule> _addRules = new ObservableCollection<Rule>();
+        Work curWork = new Work();
         List<Rule> _rules = new List<Rule>();
         private void RibbonWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -57,6 +47,10 @@ namespace BatchRename
 
             fileListView.Visibility = Visibility.Visible;
             folderListView.Visibility = Visibility.Hidden;
+
+            curWork = new Work();
+            curWork.Name = "";
+
             loadDLL();
             loadPreset();
         }
@@ -890,6 +884,35 @@ namespace BatchRename
 
                             if (fileListView.Visibility == Visibility.Visible)
                             {
+                                var charToSpaceMethod = type.GetMethod("changeCharToSpace");
+
+                                for (int i = 0; i < _files.Count; i++)
+                                {
+                                    if (_files[i].newName != "")
+                                    {
+                                        curName = _files[i].newName;
+                                    }
+
+                                    else
+                                    {
+                                        curName = _files[i].name;
+                                    }
+
+                                    rename = charToSpaceMethod.Invoke(obj, new object[] { curName, oldChar1 }).ToString();
+                                    var newFile = new File()
+                                    {
+                                        name = _files[i].name,
+                                        newName = rename,
+                                        extension = _files[i].extension,
+                                        path = _files[i].path,
+                                        isSelected = false
+                                    };
+                                    _files[i] = newFile;
+                                }
+                            }  
+
+                            else
+                            {
                                 var charToSpaceMethod = type.GetMethod("changeCharToSpaceFolder");
 
                                 for (int i = 0; i < _folders.Count; i++)
@@ -915,7 +938,7 @@ namespace BatchRename
                                     };
                                     _folders[i] = newFolder;
                                 }
-                            }  
+                            }
                         }
                     }
 
@@ -1758,6 +1781,177 @@ namespace BatchRename
                         break;
                     case MessageBoxResult.No:
                         break;
+                }
+            }
+        }
+
+        private void saveWorkButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<File> _curFiles = new List<File>();
+            List<File> _curFolders = new List<File>();
+            List<Rule> _curRules = new List<Rule>();
+
+            for (int i = 0; i < _files.Count; i++)
+            {
+                _curFiles.Add(_files[i]);
+            }
+
+            for (int i = 0; i < _folders.Count; i++)
+            {
+                _curFolders.Add(_folders[i]);
+            }
+
+            for (int i = 0; i < _addRules.Count; i++)
+            {
+                _curRules.Add(_addRules[i]);
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.DefaultExt = "json";
+
+            if (System.IO.File.Exists(curWork.Name))
+            {
+                Work newWork = new Work()
+                {
+                    Files = _curFiles,
+                    Folders = _curFolders,
+                    Rules = _curRules
+                };
+                System.IO.File.WriteAllText(curWork.Name, JsonConvert.SerializeObject(newWork));
+                MessageBox.Show("Successfully save work!", "", MessageBoxButton.OK);
+            }
+
+            else
+            {
+                if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    if (saveFileDialog.FileName != "")
+                    {
+                        Work newWork = new Work()
+                        {
+                            Name = saveFileDialog.FileName,
+                            Files = _curFiles,
+                            Folders = _curFolders,
+                            Rules = _curRules
+                        };
+
+                        System.IO.File.WriteAllText(saveFileDialog.FileName, JsonConvert.SerializeObject(newWork));
+                        MessageBox.Show("Successfully save work!", "", MessageBoxButton.OK);
+                        curWork = newWork;
+                    }
+                }
+            } 
+        }
+
+        private void openWorkButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Json files (*.json)|*.json";
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string json = System.IO.File.ReadAllText(openFileDialog.FileName);
+                curWork = JsonConvert.DeserializeObject<Work>(json);
+                curWork.Name = openFileDialog.FileName;         
+       
+                _files.Clear();
+                _folders.Clear();
+                _addRules.Clear();
+
+                foreach (File item in curWork.Files)
+                {
+                    if (System.IO.File.Exists(item.path))
+                    {
+                        item.newName = "";
+                        _files.Add(item);
+                    }
+                    
+                    else
+                    {
+                        string newPath = Path.GetDirectoryName(item.path);
+                        newPath += "\\" + item.newName;
+                        item.name = Path.GetFileNameWithoutExtension(newPath);
+                        item.extension = Path.GetExtension(newPath);
+                        item.newName = "";
+                        _files.Add(item);
+                    }
+                }
+
+                foreach (File item in curWork.Folders)
+                {
+                    if (System.IO.File.Exists(item.path))
+                    {
+                        item.newName = "";
+                        _folders.Add(item);
+                    }
+
+                    else
+                    {
+                        string newPath = Path.GetDirectoryName(item.path);
+                        newPath += item.newName;
+                        item.name = item.newName;
+                        item.newName = "";
+                        _folders.Add(item);
+                    }
+                }
+
+                foreach (Rule item in curWork.Rules)
+                {
+                    _addRules.Add(item);
+                }
+            }
+        }
+
+        private void newWorkButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (curWork.Name != "")
+            {
+                curWork.Name = "";
+                _addRules.Clear();
+                _files.Clear();
+                _folders.Clear();
+            }
+        }
+
+        private void saveAsWorkButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<File> _curFiles = new List<File>();
+            List<File> _curFolders = new List<File>();
+            List<Rule> _curRules = new List<Rule>();
+
+            for (int i = 0; i < _files.Count; i++)
+            {
+                _curFiles.Add(_files[i]);
+            }
+
+            for (int i = 0; i < _folders.Count; i++)
+            {
+                _curFolders.Add(_folders[i]);
+            }
+
+            for (int i = 0; i < _addRules.Count; i++)
+            {
+                _curRules.Add(_addRules[i]);
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.DefaultExt = "json";
+
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (saveFileDialog.FileName != "")
+                {
+                    Work newWork = new Work()
+                    {
+                        Name = saveFileDialog.FileName,
+                        Files = _curFiles,
+                        Folders = _curFolders,
+                        Rules = _curRules
+                    };
+
+                    System.IO.File.WriteAllText(saveFileDialog.FileName, JsonConvert.SerializeObject(newWork));
+                    MessageBox.Show("Successfully save work!", "", MessageBoxButton.OK);
+                    curWork = newWork;
                 }
             }
         }
